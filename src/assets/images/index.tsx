@@ -8,4 +8,5 @@ export const CustomImages = {
   verifyLogo: require('./user.png'),
   target: require('./target.png'),
   flash: require('./flash.png'),
+  wave: require('./wave.png'),
 };

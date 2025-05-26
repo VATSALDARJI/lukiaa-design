@@ -23,7 +23,7 @@ import {CustomImages} from '../assets/images';
 const EngagingScreen: React.FC = ({navigation}) => {
   const [otp, setOtp] = useState(new Array(6).fill(''));
   const inputsRef = useRef([]);
-  const {title} = useCommonStyles();
+  const {title, subText} = useCommonStyles();
 
   const handleFocus = index => {};
 
@@ -60,35 +60,38 @@ const EngagingScreen: React.FC = ({navigation}) => {
                 <Text style={[title, styles.title]}>Lukiaa</Text>
               </View>
               <View style={[styles.otpcontent]}>
-                <Text style={styles.subtitle}>Hey there, I'm Lukiaa</Text>
+                <View style={styles.secTitleBox}>
+                  <Text style={[title, styles.title, styles.secTitle]}>
+                    Hey there, I'm Lukiaa
+                  </Text>
+                  <Image source={CustomImages.wave} style={styles.waveStyle} />
+                </View>
+
                 <Text style={styles.subtitle}>
                   Your personal AI stylist - I'm here to help you look and feel
                   your best every day{' '}
                 </Text>
-                <Text style={styles.subtitle}>
+                <Text style={styles.thirdTitle}>
                   To style you best, I just need a few quicks details about your
                   look and perfrences.
                 </Text>
                 <View style={styles.whiteBox}>
                   <Image source={CustomImages.flash} style={styles.icon} />
-                  <Text style={styles.subtitle}>
-                    To style you best, I just need a few quicks details about
-                    your look and perfrences.
+                  <Text style={[subText, styles.whiteBoxText]}>
+                    It takes less then a minute - and your style journey begins!
                   </Text>
                 </View>
                 <View style={styles.whiteBox}>
-                  <Image source={CustomImages.flash} style={styles.icon} />
-                  <Text style={styles.subtitle}>
+                  <Image source={CustomImages.target} style={styles.icon} />
+                  <Text style={[subText, styles.whiteBoxText]}>
                     To style you best, I just need a few quicks details about
                     your look and perfrences.
                   </Text>
                 </View>
-
-                <Text style={styles.subtitle}>It takes </Text>
               </View>
             </View>
             <CustomButton
-              title="Submit"
+              title="Start Your Style Journey"
               btnStyle={styles.button}
               onPress={handleSubmit}
             />
@@ -100,6 +103,33 @@ const EngagingScreen: React.FC = ({navigation}) => {
 };
 
 const styles = StyleSheet.create({
+  thirdTitle: {
+    fontSize: 16,
+    lineHeight: 20,
+    color: colors.textSecondary,
+    fontFamily: Fonts.inter500,
+    marginVertical: 16,
+  },
+  secTitleBox: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 10,
+  },
+  waveStyle: {
+    width: 30,
+    height: 30,
+  },
+  secTitle: {
+    color: colors.black,
+    marginBottom: 10,
+  },
+  whiteBoxText: {
+    flex: 1,
+    fontSize: 14,
+    lineHeight: 16,
+    color: colors.textSecondary,
+    fontFamily: Fonts.inter400,
+  },
   icon: {
     width: 25,
     height: 25,
@@ -107,8 +137,12 @@ const styles = StyleSheet.create({
   whiteBox: {
     backgroundColor: colors.white,
     borderRadius: 14,
-    padding: 7,
+    padding: 12,
+    paddingHorizontal: 16,
     flexDirection: 'row',
+    alignItems: 'center',
+    columnGap: 10,
+    marginVertical: 12,
   },
   gradient: {
     flex: 1,
@@ -117,17 +151,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   subtitle: {
-    fontFamily: Fonts.inter600,
+    fontFamily: Fonts.inter700,
     fontSize: 20,
-    textAlign: 'center',
     marginVertical: 16,
     marginTop: 20,
+    color: colors.accent,
   },
   otpcontent: {
     flexGrow: 1,
     justifyContent: 'center',
-    marginTop: 50,
-    // backgroundColor: 'red',
   },
   header: {
     marginTop: 70,
@@ -155,6 +187,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     lineHeight: 34,
     textAlign: 'left',
+    marginBottom: 0,
   },
   otpContainer: {
     flexDirection: 'row',
@@ -168,7 +201,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 10,
     borderColor: colors.gradientstartColor,
-    // marginHorizontal: 5,
     fontSize: 14,
     lineHeight: 14,
     textAlign: 'center',

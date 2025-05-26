@@ -1,6 +1,6 @@
-import { Platform, TextStyle, ViewStyle } from 'react-native';
-import { colors } from '../constants/colors';
-import { Fonts } from '../assets/fonts/Customfont';
+import {Platform, TextStyle, ViewStyle} from 'react-native';
+import {colors} from '../constants/colors';
+import {Fonts} from '../assets/fonts/Customfont';
 
 interface CommonStyles {
   disabledInputContentStyle: TextStyle;
@@ -21,8 +21,8 @@ export const useCommonStyles = (): CommonStyles => {
       lineHeight: 21.6,
       color: colors.textSecondary,
       backgroundColor: 'transparent',
-      margin: Platform.select({ ios: 3, android: 3 }),
-      marginVertical: Platform.select({ ios: 3, android: 3 }),
+      margin: Platform.select({ios: 3, android: 3}),
+      marginVertical: Platform.select({ios: 3, android: 3}),
       paddingHorizontal: 16,
       fontFamily: Fonts.inter400,
     },
@@ -32,13 +32,13 @@ export const useCommonStyles = (): CommonStyles => {
       fontFamily: Fonts.inter500,
       color: colors.textSecondary,
       backgroundColor: 'transparent',
-      margin: Platform.select({ ios: 3, android: 3 }),
-      marginVertical: Platform.select({ ios: 3, android: 3 }),
+      margin: Platform.select({ios: 3, android: 3}),
+      marginVertical: Platform.select({ios: 3, android: 3}),
       paddingHorizontal: 16,
     },
     title: {
       fontSize: 24,
-      lineHeight:29,
+      lineHeight: 29,
       fontFamily: Fonts.poppins600,
       marginBottom: 18,
       textAlign: 'center',
@@ -46,12 +46,12 @@ export const useCommonStyles = (): CommonStyles => {
     },
     subText: {
       fontSize: 14,
+      lineHeight: 16,
       fontFamily: Fonts.inter400,
       color: colors.textSecondary,
-      marginVertical: 8,
     },
     button: {
-      backgroundColor: colors.primaryBrand,  // updated from 'primary' to 'primaryBrand'
+      backgroundColor: colors.primaryBrand, // updated from 'primary' to 'primaryBrand'
       paddingVertical: 14,
       paddingHorizontal: 24,
       borderRadius: 8,
@@ -59,7 +59,7 @@ export const useCommonStyles = (): CommonStyles => {
       justifyContent: 'center',
       elevation: 3, // Android shadow
       shadowColor: '#000', // iOS shadow
-      shadowOffset: { width: 0, height: 2 },
+      shadowOffset: {width: 0, height: 2},
       shadowOpacity: 0.25,
       shadowRadius: 3.84,
     },
@@ -80,7 +80,7 @@ export const useCommonStyles = (): CommonStyles => {
       borderRadius: 8,
       padding: 16,
       shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
+      shadowOffset: {width: 0, height: 2},
       shadowOpacity: 0.1,
       shadowRadius: 4,
       elevation: 2,

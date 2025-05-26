@@ -64,8 +64,8 @@ const CustomInput = forwardRef<any, CustomInputProps>(
   ) => {
     const [isSecure, setIsSecure] = useState(isPassword || false);
     const {inputContent} = useCommonStyles();
-    console.log(isFocus || value?.length > 0 ? 'yes': 'no');
-    
+    console.log(isFocus || value?.length > 0 ? 'yes' : 'no');
+
     // const [isFocused, setIsFocused] = useState(false);
     // const inputRef = useRef<any>(null);
 
@@ -86,6 +86,8 @@ const CustomInput = forwardRef<any, CustomInputProps>(
       if (handleIconAction) handleIconAction();
     };
 
+    console.log(label, value, 'have value');
+
     return (
       <View style={[styles.container, inputBoxStyle]}>
         <View style={styles.inputContainer}>
@@ -104,6 +106,15 @@ const CustomInput = forwardRef<any, CustomInputProps>(
                 if (onBlurChange) onBlurChange();
               }}
               label={label}
+              labelStyle={[
+                {
+                  color:
+                    isFocus || value?.length > 0
+                      ? colors.gradientendColor
+                      : colors.trustBase,
+                },
+                styles.labelStyle,
+              ]}
               cursorColor={colors.textSecondary}
               value={value}
               onChangeText={onChange}
@@ -122,7 +133,6 @@ const CustomInput = forwardRef<any, CustomInputProps>(
                     isFocus || value?.length > 0
                       ? colors.gradientendColor
                       : colors.trustBase,
-                      
                 },
               }}
               {...inputConfigurations}
@@ -172,6 +182,9 @@ const CustomInput = forwardRef<any, CustomInputProps>(
 export default React.memo(CustomInput);
 
 const styles = StyleSheet.create({
+  labelStyle:{
+    
+  },
   onFocusInput: {
     color: colors.errorAlert,
   },

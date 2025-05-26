@@ -1,16 +1,18 @@
-import React, {useCallback, useRef, useState} from 'react';
+// SignupScreen.js
+
+import React from 'react';
 import {
   View,
   Text,
   ScrollView,
   StyleSheet,
-  Alert,
   Keyboard,
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
   Platform,
   Image,
 } from 'react-native';
+import {useForm, Controller} from 'react-hook-form';
 import CustomInput from '../common/CustomInput';
 import CustomButton from '../common/CustumButton';
 import {Fonts} from '../assets/fonts/Customfont';
@@ -19,34 +21,63 @@ import {useCommonStyles} from '../common/CommonStyle';
 import {colors} from '../constants/colors';
 import {CustomImages} from '../assets/images';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import ErrorText from '../common/ErrorText';
+import {useMutation} from '@tanstack/react-query';
+import {SignupApi} from '../axios/PostApis';
+import {
+  emailValidation,
+  nameValidation,
+  passwordValidation,
+} from '../utils/validation';
+import CustomLoader from '../common/CustomLoader';
+import {AppLoaderRef} from '../navigation/RootScreen';
 
+// ✅ Import validation rules
 const SignupScreen = ({navigation}) => {
-  const [form, setForm] = useState({name: '', email: '', password: ''});
+  const {
+    control,
+    handleSubmit,
+    formState: {errors},
+  } = useForm({
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+    },
+  });
+
   const {title} = useCommonStyles();
-  const nameRef = useRef(null);
-  const emailRef = useRef(null);
-  const passwordRef = useRef(null);
-  const [isActiveInput, setIsActiveInput] = useState('');
-
-  const handleChange = useCallback((field, value) => {
-    setForm(prev => ({...prev, [field]: value}));
-  }, []);
-
-  const handleLogin = useCallback(() => {
-    if (!form.name || !form.email || !form.password) {
-      Alert.alert('Please fill all fields');
-      return;
-    }
-
-    console.log('Signup payload:', form);
-    // Add API call here
-  }, [form]);
-
   const {top, bottom} = useSafeAreaInsets();
 
-  const handleFocus = useCallback((name = '') => {
-    setIsActiveInput(name);
-  }, []);
+  // ✅ Signup mutation
+  const {mutate} = useMutation({
+    mutationFn: SignupApi,
+    onMutate: () => {
+      AppLoaderRef.current?.start(); // Show loader
+    },
+    onSuccess: data => {
+      console.log('Signup Success:', data);
+      // Navigate or show success toast here
+      navigation.navigate('Login');
+    },
+    onError: error => {
+      console.error('Signup Error:', error);
+      // Show error toast here
+    },
+    onSettled: () => {
+      AppLoaderRef.current?.stop(); // Hide loader
+    },
+  });
+
+  const onSubmit = data => {
+    const payload = {
+      nickName: data.name,
+      email: data.email,
+      password: data.password,
+    };
+
+    mutate(payload); // ✅ Call API mutation
+  };
 
   return (
     <KeyboardAvoidingView
@@ -65,55 +96,88 @@ const SignupScreen = ({navigation}) => {
               </View>
               <Text style={styles.subtitle}>AI Stylish</Text>
               <Text style={styles.subtext}>
-                Fast forward fastion, powered by AI
+                Fast forward fashion, powered by AI
               </Text>
             </View>
             <CardWrapper>
               <View style={[styles.container]}>
-                <CustomInput
-                  label="Full Name"
-                  value={form.name}
-                  onChange={val => handleChange('name', val)}
-                  ref={nameRef}
-                  showIcon
-                  iconSource={CustomImages.contact}
-                  iconStyle={{tintColor: colors.textSecondary}}
-                  isFocus={isActiveInput === 'name'}
-                  onFocusChange={() => handleFocus('name')}
-                  onBlurChange={() => handleFocus()}
-                  isValue={form.name.length > 0}
+                <Controller
+                  control={control}
+                  name="name"
+                  rules={nameValidation}
+                  render={({
+                    field: {onChange, value},
+                    fieldState: {isTouched},
+                  }) => (
+                    <CustomInput
+                      label="Full Name"
+                      value={value}
+                      onChange={onChange}
+                      showIcon
+                      iconSource={CustomImages.contact}
+                      iconStyle={{tintColor: colors.textSecondary}}
+                      isFocus={isTouched}
+                      isValue={value.length > 0}
+                    />
+                  )}
+                />
+                <ErrorText
+                  visible={errors.name?.message}
+                  message={errors.name?.message}
                 />
 
-                <CustomInput
-                  label="Email/Phone"
-                  value={form.email}
-                  onChange={val => handleChange('email', val)}
-                  ref={emailRef}
-                  showIcon
-                  iconSource={CustomImages.mail}
-                  isFocus={isActiveInput === 'email'}
-                  onFocusChange={() => handleFocus('email')}
-                  onBlurChange={() => handleFocus()}
-                  isValue={form.email.length > 0}
+                <Controller
+                  control={control}
+                  name="email"
+                  rules={emailValidation}
+                  render={({
+                    field: {onChange, value},
+                    fieldState: {isTouched},
+                  }) => (
+                    <CustomInput
+                      label="Email/Phone"
+                      value={value}
+                      onChange={onChange}
+                      showIcon
+                      iconSource={CustomImages.mail}
+                      isFocus={isTouched}
+                      isValue={value.length > 0}
+                    />
+                  )}
+                />
+                <ErrorText
+                  visible={errors.email?.message}
+                  message={errors.email?.message}
                 />
 
-                <CustomInput
-                  label="Password"
-                  value={form.password}
-                  onChange={val => handleChange('password', val)}
-                  isPassword
-                  ref={passwordRef}
-                  iconStyle={{width: 24, height: 24}}
-                  isFocus={isActiveInput === 'password'}
-                  onFocusChange={() => handleFocus('password')}
-                  onBlurChange={() => handleFocus()}
-                  isValue={form.password.length > 0}
+                <Controller
+                  control={control}
+                  name="password"
+                  rules={passwordValidation}
+                  render={({
+                    field: {onChange, value},
+                    fieldState: {isTouched},
+                  }) => (
+                    <CustomInput
+                      label="Password"
+                      value={value}
+                      onChange={onChange}
+                      isPassword
+                      iconStyle={{width: 24, height: 24}}
+                      isFocus={isTouched}
+                      isValue={value.length > 0}
+                    />
+                  )}
+                />
+                <ErrorText
+                  visible={errors.password?.message}
+                  message={errors.password?.message}
                 />
 
                 <CustomButton
                   title="Sign Up"
                   btnStyle={styles.button}
-                  onPress={handleLogin}
+                  onPress={handleSubmit(onSubmit)}
                 />
 
                 <View style={styles.signupContainer}>

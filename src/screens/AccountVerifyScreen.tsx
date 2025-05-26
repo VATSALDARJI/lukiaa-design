@@ -72,7 +72,7 @@ const AccountVerifyScreen: React.FC = ({navigation}) => {
   const handleSubmit = () => {
     const enteredOtp = otp.join('');
     if (enteredOtp.length === 6) {
-       navigation.navigate('EngagingScreen')
+      navigation.navigate('EngagingScreen');
 
       // Add your verification logic here
     } else {
@@ -117,6 +117,7 @@ const AccountVerifyScreen: React.FC = ({navigation}) => {
               title="Submit"
               btnStyle={styles.button}
               onPress={handleSubmit}
+              showIcon
             />
           </View>
         </View>

@@ -94,6 +94,7 @@ const LoginScreen = ({navigation}) => {
                 title="Login"
                 btnStyle={styles.button}
                 onPress={handleLogin}
+                showIcon
               />
 
               <View style={styles.signupContainer}>
