@@ -12,7 +12,7 @@ import {
   Image,
 } from 'react-native';
 import CardWrapper from '../common/CardWrapper';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import CustomButton from '../common/CustumButton';
 import {colors} from '../constants/colors';
 import {useCommonStyles} from '../common/CommonStyle';
@@ -25,15 +25,8 @@ const EngagingScreen: React.FC = ({navigation}) => {
   const inputsRef = useRef([]);
   const {title, subText} = useCommonStyles();
 
-  const handleFocus = index => {};
-
-  const handleSubmit = () => {
-    const enteredOtp = otp.join('');
-    if (enteredOtp.length === 6) {
-      // Add your verification logic here
-    } else {
-      Alert.alert('Error', 'Please enter the full 6-digit OTP');
-    }
+  const handleNextNav = () => {
+    navigation.navigate('ProfileScreen');
   };
 
   const {top, bottom} = useSafeAreaInsets();
@@ -46,63 +39,73 @@ const EngagingScreen: React.FC = ({navigation}) => {
       start={{x: 1, y: 1}} // Start at bottom-right
       end={{x: 0, y: 0}} // End at top-left
       style={styles.gradient}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{flex: 1}}>
-        <ScrollView
-          style={[styles.scrollView, {marginTop: top, paddingBottom: bottom}]}
-          contentContainerStyle={{flexGrow: 1}}
-          showsVerticalScrollIndicator
-          keyboardShouldPersistTaps="handled">
-          <View style={[styles.innerContent, {paddingBottom: bottom}]}>
-            <View style={styles.topPart}>
-              <View style={styles.header}>
-                <Text style={[title, styles.title]}>Lukiaa</Text>
-              </View>
+      <ScrollView
+        style={[styles.scrollView, {marginTop: top, marginBottom:  bottom + 36}]}
+        contentContainerStyle={{flexGrow: 1}}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled">
+        <View style={[styles.innerContent, {marginBottom: bottom}]}>
+          <View style={styles.topPart}>
+            <View style={styles.header}>
+              <Text style={[title, styles.title]}>Lukiaa</Text>
+            </View>
+            <View style={styles.commonContainer}>
               <View style={[styles.otpcontent]}>
                 <View style={styles.secTitleBox}>
                   <Text style={[title, styles.title, styles.secTitle]}>
-                    Hey there, I'm Lukiaa
+                    Hey there, I'm Lukiaa...
                   </Text>
                   <Image source={CustomImages.wave} style={styles.waveStyle} />
                 </View>
 
                 <Text style={styles.subtitle}>
-                  Your personal AI stylist - I'm here to help you look and feel
-                  your best every day{' '}
+                  <Text style={{fontSize: 25}}>Y</Text>our personal AI stylist -
+                  I'm here to help you look and feel your best every day.{' '}
                 </Text>
-                <Text style={styles.thirdTitle}>
-                  To style you best, I just need a few quicks details about your
-                  look and perfrences.
-                </Text>
-                <View style={styles.whiteBox}>
-                  <Image source={CustomImages.flash} style={styles.icon} />
-                  <Text style={[subText, styles.whiteBoxText]}>
-                    It takes less then a minute - and your style journey begins!
-                  </Text>
-                </View>
-                <View style={styles.whiteBox}>
-                  <Image source={CustomImages.target} style={styles.icon} />
-                  <Text style={[subText, styles.whiteBoxText]}>
-                    To style you best, I just need a few quicks details about
-                    your look and perfrences.
-                  </Text>
-                </View>
               </View>
+              <Image
+                source={CustomImages.logo}
+                style={styles.sideChar}
+                resizeMode="cover"
+              />
             </View>
-            <CustomButton
-              title="Start Your Style Journey"
-              btnStyle={styles.button}
-              onPress={handleSubmit}
-            />
+            <Text style={styles.thirdTitle}>
+              To style you best, I just need a few quicks details about your
+              look and perfrences.
+            </Text>
+            <View style={styles.whiteBox}>
+              <Image source={CustomImages.flash} style={styles.icon} />
+              <Text style={[subText, styles.whiteBoxText]}>
+                It takes less then a minute - and your style journey begins!
+              </Text>
+            </View>
+            <View style={styles.whiteBox}>
+              <Image source={CustomImages.target} style={styles.icon} />
+              <Text style={[subText, styles.whiteBoxText]}>
+                To style you best, I just need a few quicks details about your
+                look and perfrences.
+              </Text>
+            </View>
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+          <CustomButton
+            title="Start Your Style Journey"
+            btnStyle={styles.button}
+            onPress={handleNextNav}
+          />
+        </View>
+      </ScrollView>
     </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
+  commonContainer: {
+    flexDirection: 'row',
+  },
+  sideChar: {
+    height: 300,
+    width: 150,
+  },
   thirdTitle: {
     fontSize: 16,
     lineHeight: 20,
@@ -122,6 +125,7 @@ const styles = StyleSheet.create({
   secTitle: {
     color: colors.black,
     marginBottom: 10,
+    marginTop: 16,
   },
   whiteBoxText: {
     flex: 1,
@@ -158,13 +162,15 @@ const styles = StyleSheet.create({
     color: colors.accent,
   },
   otpcontent: {
-    flexGrow: 1,
+    flex: 1,
     justifyContent: 'center',
   },
   header: {
-    marginTop: 70,
+    marginTop: 40,
   },
-  button: {},
+  button: {
+    marginTop: 16,
+  },
   keyboardAvoidingView: {
     flex: 1,
   },

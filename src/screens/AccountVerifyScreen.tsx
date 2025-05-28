@@ -18,11 +18,14 @@ import {colors} from '../constants/colors';
 import {useCommonStyles} from '../common/CommonStyle';
 import {Fonts} from '../assets/fonts/Customfont';
 import {CustomImages} from '../assets/images';
+import {useDispatch} from 'react-redux';
+import {login} from '../redux/slice/authSlice';
 
 const AccountVerifyScreen: React.FC = ({navigation}) => {
   const [otp, setOtp] = useState(new Array(6).fill(''));
   const inputsRef = useRef([]);
   const {title} = useCommonStyles();
+  const disptach = useDispatch();
 
   const handleChange = (text, index) => {
     if (/^[0-9]$/.test(text) || text === '') {
@@ -70,10 +73,10 @@ const AccountVerifyScreen: React.FC = ({navigation}) => {
   };
 
   const handleSubmit = () => {
+    disptach(login({username: 'test', token: 'dummy'}));
+    return;
     const enteredOtp = otp.join('');
     if (enteredOtp.length === 6) {
-      navigation.navigate('EngagingScreen');
-
       // Add your verification logic here
     } else {
       Alert.alert('Error', 'Please enter the full 6-digit OTP');

@@ -6,27 +6,34 @@ import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
 import AccountVerifyScreen from '../screens/AccountVerifyScreen';
 import EngagingScreen from '../screens/EngagingScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import CustomHeader from '../components/header/CustomHeader';
 
-export type AuthParams = {
-  Login: undefined;
-  Signup: undefined;
-  AccountVerify: undefined;
+export type MainStackParams = {
+  ProfileScreen: undefined;
+  EngagingScreen: undefined;
 };
 
-const Stack = createNativeStackNavigator<AuthParams>();
+const Stack = createNativeStackNavigator<MainStackParams>();
 
-export const AuthStack = () => {
+export const MainStack = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Login"
+        initialRouteName="EngagingScreen"
         screenOptions={() => ({
           contentStyle: styles.commonContentStyle,
           headerShown: false,
         })}>
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Signup" component={SignupScreen} />
-        <Stack.Screen name="AccountVerify" component={AccountVerifyScreen} />
+        <Stack.Screen
+          name="EngagingScreen"
+          component={EngagingScreen}
+          options={{
+            header: () => <CustomHeader />,
+            headerShown: true,
+          }}
+        />
+        <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
