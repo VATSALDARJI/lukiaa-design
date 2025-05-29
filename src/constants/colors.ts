@@ -16,4 +16,4 @@ export const colors = {
   info: '#3B82F6',
   white: '#FFFFFF',
   black: '#000000',
-} as const;
+};

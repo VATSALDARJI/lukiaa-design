@@ -9,4 +9,5 @@ export const CustomImages = {
   target: require('./target.png'),
   flash: require('./flash.png'),
   wave: require('./wave.png'),
+  down: require('./down.png'),
 };

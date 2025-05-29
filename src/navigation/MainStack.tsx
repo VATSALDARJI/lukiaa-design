@@ -25,15 +25,15 @@ export const MainStack = () => {
           contentStyle: styles.commonContentStyle,
           headerShown: false,
         })}>
+        <Stack.Screen name="EngagingScreen" component={EngagingScreen} />
         <Stack.Screen
-          name="EngagingScreen"
-          component={EngagingScreen}
+          name="ProfileScreen"
+          component={ProfileScreen}
           options={{
             header: () => <CustomHeader />,
             headerShown: true,
           }}
         />
-        <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

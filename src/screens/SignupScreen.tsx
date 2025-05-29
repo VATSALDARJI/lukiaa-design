@@ -31,6 +31,8 @@ import {
 } from '../utils/validation';
 import CustomLoader from '../common/CustomLoader';
 import {AppLoaderRef} from '../navigation/RootScreen';
+import {CustomToaster} from '../components/toaster/CustomToaster';
+import {ALERT_TYPE} from 'react-native-alert-notification';
 
 // ✅ Import validation rules
 const SignupScreen = ({navigation}) => {
@@ -57,11 +59,19 @@ const SignupScreen = ({navigation}) => {
     },
     onSuccess: data => {
       console.log('Signup Success:', data);
+      CustomToaster({
+        message: 'Signup Successfully!!!',
+        type: ALERT_TYPE.SUCCESS,
+      });
       // Navigate or show success toast here
       navigation.navigate('Login');
     },
     onError: error => {
       console.error('Signup Error:', error);
+      CustomToaster({
+        message: error.message ?? 'Something went wrong',
+        type: ALERT_TYPE.DANGER,
+      });
       // Show error toast here
     },
     onSettled: () => {
