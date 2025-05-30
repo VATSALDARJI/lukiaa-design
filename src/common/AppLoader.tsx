@@ -12,7 +12,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import LoaderKit from 'react-native-loader-kit';
-import { colors } from '../constants/colors'; // Adjust path if needed
+import {colors} from '../constants/colors'; // Adjust path if needed
 
 // Define the type of functions exposed via ref
 export interface LoaderType {
@@ -31,8 +31,8 @@ const AppLoader = forwardRef<LoaderType, CustomLoaderProps>(
   (
     {
       backgroundColor = 'rgba(0, 0, 0, 0.3)',
-      loaderColor = colors.gradientendColor,
-      size = 50,
+      loaderColor = colors.gradientstartColor,
+      size = 70,
       overlayStyle,
     },
     ref,
@@ -58,13 +58,13 @@ const AppLoader = forwardRef<LoaderType, CustomLoaderProps>(
         <View
           style={[
             styles.overlay,
-            { backgroundColor: backgroundColor },
+            {backgroundColor: backgroundColor},
             overlayStyle,
           ]}>
-          <ActivityIndicator size="large" color={loaderColor} />
+          {/* <ActivityIndicator size="large" color={loaderColor} /> */}
           <LoaderKit
-            style={{ width: size, height: size }}
-            name="BallPulse"
+            style={{width: size, height: size}}
+            name="BallScaleRippleMultiple"
             color={loaderColor}
           />
         </View>

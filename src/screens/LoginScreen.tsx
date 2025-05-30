@@ -1,8 +1,7 @@
-import React, {useCallback, useRef, useState} from 'react';
+import React, { useRef } from 'react';
 import {
   View,
   Text,
-  Alert,
   StyleSheet,
   ScrollView,
   KeyboardAvoidingView,
@@ -10,46 +9,75 @@ import {
   SafeAreaView,
   Image,
 } from 'react-native';
+import { useForm, Controller } from 'react-hook-form';
 import CustomInput from '../common/CustomInput';
-import {Fonts} from '../assets/fonts/Customfont';
+import { Fonts } from '../assets/fonts/Customfont';
 import CardWrapper from '../common/CardWrapper';
-import {colors} from '../constants/colors';
+import { colors } from '../constants/colors';
 import CustomButton from '../common/CustumButton';
-import {CustomImages} from '../assets/images';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useCommonStyles} from '../common/CommonStyle';
+import { CustomImages } from '../assets/images';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { LoginApi } from '../axios/PostApis';
+import { useMutation } from '@tanstack/react-query';
+import { AppLoaderRef } from '../navigation/RootScreen';
+import { CustomToaster } from '../components/toaster/CustomToaster';
+import { ALERT_TYPE } from 'react-native-alert-notification';
 
-const LoginScreen = ({navigation}) => {
-  const [form, setForm] = useState({email: '', password: ''});
+// Define type to match LoginApi
+type LoginFormData = {
+  identifier: string;
+  password: string;
+};
+
+const LoginScreen = ({ navigation }) => {
+  const { control, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
+    defaultValues: {
+      identifier: '',
+      password: '',
+    },
+  });
+  const identifierRef = useRef(null);
   const passwordRef = useRef(null);
-  const emailRef = useRef(null);
-  const [isActiveInput, setIsActiveInput] = useState('');
-  const {title} = useCommonStyles();
+  const { top, bottom } = useSafeAreaInsets();
 
-  const handleChange = useCallback((field, value) => {
-    setForm(prev => ({...prev, [field]: value}));
-  }, []);
+  // ✅ Login mutation
+  const { mutate } = useMutation({
+    mutationFn: LoginApi,
+    onMutate: () => {
+      AppLoaderRef.current?.start(); // Show loader
+    },
+    onSuccess: data => {
+      console.log('Login Success:', data);
+      CustomToaster({
+        message: 'Login Successfully!!!',
+        type: ALERT_TYPE.SUCCESS,
+      });
+      navigation.navigate('AccountVerify'); // Moved navigation here for consistency
+    },
+    onError: error => {
+      console.error('Login Error:', error);
+      CustomToaster({
+        message: error.message ?? 'Something went wrong',
+        type: ALERT_TYPE.DANGER,
+      });
+    },
+    onSettled: () => {
+      AppLoaderRef.current?.stop(); // Hide loader
+    },
+  });
 
-  const handleLogin = useCallback(() => {
-    navigation.navigate('AccountVerify');
-    console.log('Login payload:', form);
-    // You can add your API call here
-  }, [form, navigation]);
-
-  const handleFocus = useCallback((name = '') => {
-    setIsActiveInput(name);
-  }, []);
-
-  const {top, bottom} = useSafeAreaInsets();
+  const onSubmit = (data: LoginFormData) => {
+    console.log('Login payload:', data);
+    mutate(data); // Call the mutation with form data
+  };
 
   return (
-    // <SafeAreaView style={{flex: 1}}>
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{flex: 1}}>
+      style={{ flex: 1 }}>
       <ScrollView
-        style={[styles.scrollView, {marginTop: top, marginBottom: bottom}]}
-        contentContainerStyle={{flexGrow: 1}}
+        style={[styles.scrollView, { marginTop: top, marginBottom: bottom }]}
+        contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator
         keyboardShouldPersistTaps="handled">
         <View style={styles.innerContent}>
@@ -63,37 +91,68 @@ const LoginScreen = ({navigation}) => {
             </Text>
           </View>
           <CardWrapper>
-            <View style={[styles.container]}>
-              <CustomInput
-                label="Email/Phone"
-                value={form.email}
-                onChange={val => handleChange('email', val)}
-                ref={emailRef}
-                isFocus={isActiveInput === 'email'}
-                isValue={form.email.length > 0}
-                onFocusChange={() => handleFocus('email')}
-                onBlurChange={() => handleFocus()}
-                showIcon
-                iconSource={CustomImages.contact}
+            <View style={styles.container}>
+              <Controller
+                control={control}
+                name="identifier"
+                rules={{
+                  required: 'Email/Phone is required',
+                  pattern: {
+                    // Supports email or phone number
+                    value: /^(?:[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}|[0-9]{10})$/,
+                    message: 'Enter a valid email or 10-digit phone number',
+                  },
+                }}
+                render={({ field: { onChange, value }, fieldState: { isTouched } }) => (
+                  <CustomInput
+                    label="Email/Phone"
+                    value={value}
+                    onChange={onChange}
+                    ref={identifierRef}
+                    isFocus={isTouched}
+                    isValue={value.length > 0}
+                    onFocusChange={() => {}}
+                    onBlurChange={() => {}}
+                    showIcon
+                    iconSource={CustomImages.contact}
+                    error={errors.identifier?.message}
+                  />
+                )}
               />
+              {errors.identifier && <Text style={styles.errorText}>{errors.identifier.message}</Text>}
 
-              <CustomInput
-                label="Password"
-                value={form.password}
-                onChange={val => handleChange('password', val)}
-                isPassword
-                ref={passwordRef}
-                isFocus={isActiveInput === 'password'}
-                onFocusChange={() => handleFocus('password')}
-                onBlurChange={() => handleFocus()}
-                iconStyle={{width: 24, height: 24}}
-                isValue={form.password.length > 0}
+              <Controller
+                control={control}
+                name="password"
+                rules={{
+                  required: 'Password is required',
+                  minLength: {
+                    value: 6,
+                    message: 'Password must be at least 6 characters',
+                  },
+                }}
+                render={({ field: { onChange, value }, fieldState: { isTouched } }) => (
+                  <CustomInput
+                    label="Password"
+                    value={value}
+                    onChange={onChange}
+                    isPassword
+                    ref={passwordRef}
+                    isFocus={isTouched}
+                    isValue={value.length > 0}
+                    onFocusChange={() => {}}
+                    onBlurChange={() => {}}
+                    iconStyle={{ width: 24, height: 24 }}
+                    error={errors.password?.message}
+                  />
+                )}
               />
+              {errors.password && <Text style={styles.errorText}>{errors.password.message}</Text>}
 
               <CustomButton
                 title="Login"
                 btnStyle={styles.button}
-                onPress={handleLogin}
+                onPress={handleSubmit(onSubmit)}
                 showIcon
               />
 
@@ -112,7 +171,6 @@ const LoginScreen = ({navigation}) => {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
-    // </SafeAreaView>
   );
 };
 
@@ -145,12 +203,6 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
   },
-  scrollViewContent: {
-    flexGrow: 1,
-  },
-  keyboardAvoidingView: {
-    flex: 1,
-  },
   scrollView: {
     flex: 1,
   },
@@ -173,6 +225,12 @@ const styles = StyleSheet.create({
   signupContainer: {
     marginTop: 10,
     alignItems: 'center',
+  },
+  errorText: {
+    color: colors.errorAlert,
+    fontFamily: Fonts.inter400,
+    fontSize: 12,
+    marginTop: 4,
   },
 });
 

@@ -1,10 +1,14 @@
 import {onlineManager} from '@tanstack/react-query';
 import axios from 'axios';
 import store from '../redux/configureStore';
+// urls.js or urls.ts
+import Config from 'react-native-config';
+
+console.log('Config:', Config); // This should now include your LIVE_URL and LOCAL_URL
 
 const Urls = {
-  liveUrl: 'https://demo/api/',
-  localUrl: 'http://3.109.136.79:3000/v1/users/',
+  liveUrl: Config.LIVE_URL,
+  localUrl: Config.LOCAL_URL,
 };
 
 const AxiosInstance = axios.create({
