@@ -23,11 +23,12 @@ export const CustomToaster = ({type, message, title}: CustomToastProps) => {
 const styles = StyleSheet.create({
   title: {
     fontSize: 16,
-    fontFamily: Fonts.inter400,
-    color: colors.white,
+    fontFamily: Fonts.DMSans400,
+    color: colors.textPrimary,
   },
   message: {
     fontSize: 14,
-    color: colors.gradientstartColor,
+    fontFamily: Fonts.inter400,
+    color: colors.textSecondary,
   },
 });

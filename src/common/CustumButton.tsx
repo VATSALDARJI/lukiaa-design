@@ -15,6 +15,7 @@ interface CustomButtonType {
   onPress: () => void;
   btnStyle?: ViewStyle | ViewStyle[];
   showIcon?: boolean;
+  disabled?: boolean;
 }
 
 const CustomButton: React.FC<CustomButtonType> = ({
@@ -22,11 +23,12 @@ const CustomButton: React.FC<CustomButtonType> = ({
   onPress,
   btnStyle,
   showIcon,
+  disabled,
 }) => {
   return (
     <TouchableOpacity
       onPress={onPress}
-      style={[styles.buttonContainer, btnStyle]}>
+      style={[styles.buttonContainer, btnStyle, disabled && {opacity: 0.3}]}>
       <LinearGradient
         colors={[colors.gradientstartColor, colors.gradientendColor]} // Gradient from purple to pink
         start={{x: 0, y: 0}} // Gradient starts from the left

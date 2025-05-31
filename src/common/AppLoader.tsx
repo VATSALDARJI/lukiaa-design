@@ -64,7 +64,7 @@ const AppLoader = forwardRef<LoaderType, CustomLoaderProps>(
           {/* <ActivityIndicator size="large" color={loaderColor} /> */}
           <LoaderKit
             style={{width: size, height: size}}
-            name="BallScaleRippleMultiple"
+            name="BallPulse"
             color={loaderColor}
           />
         </View>

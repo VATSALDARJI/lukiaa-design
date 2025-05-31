@@ -40,7 +40,7 @@ const EngagingScreen: React.FC = ({navigation}) => {
       end={{x: 0, y: 0}} // End at top-left
       style={styles.gradient}>
       <ScrollView
-        style={[styles.scrollView, {marginTop: top, marginBottom:  bottom + 36}]}
+        style={[styles.scrollView, {marginTop: top, marginBottom: bottom}]}
         contentContainerStyle={{flexGrow: 1}}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled">
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginVertical: 16,
     marginTop: 20,
-    color: colors.accent,
+    color: colors.gradientendColor,
   },
   otpcontent: {
     flex: 1,

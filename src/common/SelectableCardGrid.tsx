@@ -1,20 +1,26 @@
-import React, {useState} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, FlatList} from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  FlatList,
+  Image,
+  ImageSourcePropType,
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {colors} from '../constants/colors';
-import {Fonts} from '../assets/fonts/Customfont';
+import { colors } from '../constants/colors';
+import { Fonts } from '../assets/fonts/Customfont';
 
-// Interface (for reference, useful when using TypeScript)
-/*
+// Interface for props
 interface SelectableCardGridProps {
-  data: {id: string; emoji: string; label: string}[];
+  data: { id: string; emoji: ImageSourcePropType; label: string }[];
   isMultiSelect?: boolean;
   onSelectionChange?: (selectedIds: string[]) => void;
   columns?: number;
   title?: string;
   description?: string;
 }
-*/
 
 const SelectableCardGrid = ({
   data = [],
@@ -23,12 +29,12 @@ const SelectableCardGrid = ({
   columns = 3,
   title = '',
   description = '',
-}) => {
-  const [selected, setSelected] = useState([]);
-  const [hoveredId, setHoveredId] = useState(null);
+}: SelectableCardGridProps) => {
+  const [selected, setSelected] = useState<string[]>([]);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
 
-  const toggleSelect = id => {
-    let updated = [];
+  const toggleSelect = (id: string) => {
+    let updated: string[] = [];
 
     if (isMultiSelect) {
       updated = selected.includes(id)
@@ -42,7 +48,7 @@ const SelectableCardGrid = ({
     onSelectionChange(updated);
   };
 
-  const renderItem = ({item}) => {
+  const renderItem = ({ item }: { item: { id: string; emoji: ImageSourcePropType; label: string } }) => {
     const isSelected = selected.includes(item.id);
     const isHovered = hoveredId === item.id;
 
@@ -63,16 +69,16 @@ const SelectableCardGrid = ({
             {isSelected ? (
               <LinearGradient
                 colors={[colors.gradientstartColor, colors.gradientendColor]}
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 1}}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
                 style={styles.gradient}>
                 <View style={styles.content}>
-                  <Text style={styles.emoji}>{item.emoji}</Text>
+                  <Image source={item.emoji} style={styles.emoji} />
                 </View>
               </LinearGradient>
             ) : (
               <View style={styles.content}>
-                <Text style={styles.emoji}>{item.emoji}</Text>
+                <Image source={item.emoji} style={styles.emoji} />
               </View>
             )}
           </View>
@@ -109,18 +115,16 @@ export default SelectableCardGrid;
 
 const styles = StyleSheet.create({
   title: {
-    fontFamily: Fonts.DMSans500,
     fontSize: 16,
+    fontFamily: Fonts.inter500,
     color: colors.textPrimary,
     marginBottom: 4,
-    paddingHorizontal: 16,
   },
   subTitle: {
     fontFamily: Fonts.inter400,
     fontSize: 14,
     color: colors.textSecondary,
     marginBottom: 12,
-    paddingHorizontal: 16,
   },
   flatListStyle: {
     paddingTop: 8,
@@ -129,7 +133,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   row: {
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     marginBottom: 10,
   },
   itemContainer: {
@@ -157,9 +161,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   cardHovered: {
-    transform: [{translateY: -4}],
+    transform: [{ translateY: -4 }],
     borderColor: colors.gradientstartColor,
-    backgroundColor: colors.white,
+    // Removed backgroundColor: colors.white to prevent white flash
   },
   gradient: {
     borderRadius: 16,
@@ -174,7 +178,8 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   emoji: {
-    fontSize: 28,
+    width: 40,
+    height: 40,
   },
   label: {
     fontSize: 12,

@@ -1,6 +1,4 @@
-// SignupScreen.js
-
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -11,9 +9,9 @@ import {
   KeyboardAvoidingView,
   Platform,
   Image,
+  TouchableOpacity,
 } from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
-import CustomInput from '../common/CustomInput';
 import CustomButton from '../common/CustumButton';
 import {Fonts} from '../assets/fonts/Customfont';
 import CardWrapper from '../common/CardWrapper';
@@ -29,13 +27,13 @@ import {
   nameValidation,
   passwordValidation,
 } from '../utils/validation';
-import CustomLoader from '../common/CustomLoader';
 import {AppLoaderRef} from '../navigation/RootScreen';
 import {CustomToaster} from '../components/toaster/CustomToaster';
 import {ALERT_TYPE} from 'react-native-alert-notification';
+import AnimatedTextInput from '../components/AnimatedTextInput';
+import {ScreenProps} from '../navigation/Stack';
 
-// ✅ Import validation rules
-const SignupScreen = ({navigation}) => {
+const SignupScreen: React.FC<ScreenProps<'Signup'>> = ({navigation}) => {
   const {
     control,
     handleSubmit,
@@ -50,12 +48,11 @@ const SignupScreen = ({navigation}) => {
 
   const {title} = useCommonStyles();
   const {top, bottom} = useSafeAreaInsets();
-
-  // ✅ Signup mutation
+  const [show, setShow] = useState(true);
   const {mutate} = useMutation({
     mutationFn: SignupApi,
     onMutate: () => {
-      AppLoaderRef.current?.start(); // Show loader
+      AppLoaderRef.current?.start();
     },
     onSuccess: data => {
       console.log('Signup Success:', data);
@@ -63,7 +60,6 @@ const SignupScreen = ({navigation}) => {
         message: 'Signup Successfully!!!',
         type: ALERT_TYPE.SUCCESS,
       });
-      // Navigate or show success toast here
       navigation.navigate('Login');
     },
     onError: error => {
@@ -72,10 +68,10 @@ const SignupScreen = ({navigation}) => {
         message: error.message ?? 'Something went wrong',
         type: ALERT_TYPE.DANGER,
       });
-      // Show error toast here
     },
     onSettled: () => {
-      AppLoaderRef.current?.stop(); // Hide loader
+      AppLoaderRef.current?.stop();
+      navigation.navigate('AccountVerify');
     },
   });
 
@@ -85,8 +81,7 @@ const SignupScreen = ({navigation}) => {
       email: data.email,
       password: data.password,
     };
-
-    mutate(payload); // ✅ Call API mutation
+    mutate(payload);
   };
 
   return (
@@ -96,7 +91,7 @@ const SignupScreen = ({navigation}) => {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView
           style={[styles.scrollView, {marginTop: top, marginBottom: bottom}]}
-          contentContainerStyle={[styles.contentStyle]}
+          contentContainerStyle={styles.contentStyle}
           keyboardShouldPersistTaps="handled">
           <View style={styles.innerContent}>
             <View style={styles.header}>
@@ -110,80 +105,118 @@ const SignupScreen = ({navigation}) => {
               </Text>
             </View>
             <CardWrapper>
-              <View style={[styles.container]}>
-                <Controller
-                  control={control}
-                  name="name"
-                  rules={nameValidation}
-                  render={({
-                    field: {onChange, value},
-                    fieldState: {isTouched},
-                  }) => (
-                    <CustomInput
-                      label="Full Name"
-                      value={value}
-                      onChange={onChange}
-                      showIcon
-                      iconSource={CustomImages.contact}
-                      iconStyle={{tintColor: colors.textSecondary}}
-                      isFocus={isTouched}
-                      isValue={value.length > 0}
+              <View style={styles.container}>
+                <View style={styles.inputContainer}>
+                  <View>
+                    <Controller
+                      control={control}
+                      name="name"
+                      rules={nameValidation}
+                      render={({
+                        field: {onChange, value},
+                        fieldState: {isTouched},
+                      }) => (
+                        <AnimatedTextInput
+                          placeholder="Full Name"
+                          defaultValue={value}
+                          onChangeText={onChange}
+                          borderColor={
+                            errors.name ? colors.errorAlert : colors.inputBorder
+                          }
+                          backgroundColor={colors.white}
+                          isFocus={isTouched}
+                          isValue={value?.length > 0}
+                          right={
+                            <TouchableOpacity style={styles.secureButton}>
+                              <Image
+                                source={CustomImages.contact}
+                                style={styles.mailIcon}
+                                tintColor={colors.textSecondary}
+                              />
+                            </TouchableOpacity>
+                          }
+                        />
+                      )}
                     />
-                  )}
-                />
-                <ErrorText
-                  visible={errors.name?.message}
-                  message={errors.name?.message}
-                />
-
-                <Controller
-                  control={control}
-                  name="email"
-                  rules={emailValidation}
-                  render={({
-                    field: {onChange, value},
-                    fieldState: {isTouched},
-                  }) => (
-                    <CustomInput
-                      label="Email/Phone"
-                      value={value}
-                      onChange={onChange}
-                      showIcon
-                      iconSource={CustomImages.mail}
-                      isFocus={isTouched}
-                      isValue={value.length > 0}
+                    <ErrorText
+                      visible={errors.name?.message}
+                      message={errors.name?.message}
                     />
-                  )}
-                />
-                <ErrorText
-                  visible={errors.email?.message}
-                  message={errors.email?.message}
-                />
-
-                <Controller
-                  control={control}
-                  name="password"
-                  rules={passwordValidation}
-                  render={({
-                    field: {onChange, value},
-                    fieldState: {isTouched},
-                  }) => (
-                    <CustomInput
-                      label="Password"
-                      value={value}
-                      onChange={onChange}
-                      isPassword
-                      iconStyle={{width: 24, height: 24}}
-                      isFocus={isTouched}
-                      isValue={value.length > 0}
+                  </View>
+                  <View>
+                    <Controller
+                      control={control}
+                      name="email"
+                      rules={emailValidation}
+                      render={({
+                        field: {onChange, value},
+                        fieldState: {isTouched},
+                      }) => (
+                        <AnimatedTextInput
+                          placeholder="Email/Phone"
+                          defaultValue={value}
+                          onChangeText={onChange}
+                          backgroundColor={colors.white}
+                          isFocus={isTouched}
+                          isValue={value?.length > 0}
+                          right={
+                            <TouchableOpacity style={styles.secureButton}>
+                              <Image
+                                source={CustomImages.mail}
+                                style={styles.mailIcon}
+                                tintColor={colors.textSecondary}
+                              />
+                            </TouchableOpacity>
+                          }
+                        />
+                      )}
                     />
-                  )}
-                />
-                <ErrorText
-                  visible={errors.password?.message}
-                  message={errors.password?.message}
-                />
-
+                    <ErrorText
+                      visible={errors.email?.message}
+                      message={errors.email?.message}
+                    />
+                  </View>
+                  <View>
+                    <Controller
+                      control={control}
+                      name="password"
+                      rules={passwordValidation}
+                      render={({
+                        field: {onChange, value},
+                        fieldState: {isTouched},
+                      }) => (
+                        <AnimatedTextInput
+                          placeholder="Password"
+                          defaultValue={value}
+                          onChangeText={onChange}
+                          secureTextEntry={show}
+                          backgroundColor={colors.white}
+                          isFocus={isTouched}
+                          isValue={value?.length > 0}
+                          right={
+                            <TouchableOpacity
+                              onPress={() => setShow(!show)}
+                              style={styles.secureButton}>
+                              <Image
+                                source={
+                                  show
+                                    ? CustomImages.eyeClose
+                                    : CustomImages.eyeOpen
+                                }
+                                style={styles.eyeStyle}
+                                tintColor={colors.textSecondary}
+                              />
+                            </TouchableOpacity>
+                          }
+                        />
+                      )}
+                    />
+                    <ErrorText
+                      visible={errors.password?.message}
+                      message={errors.password?.message}
+                    />
+                  </View>
+                </View>
                 <CustomButton
                   title="Sign Up"
                   btnStyle={styles.button}
@@ -210,6 +243,20 @@ const SignupScreen = ({navigation}) => {
 };
 
 const styles = StyleSheet.create({
+  mailIcon: {
+    width: 18,
+    height: 18,
+  },
+  secureButton: {
+    marginRight: 10,
+  },
+  eyeStyle: {
+    width: 22,
+    height: 22,
+  },
+  inputContainer: {
+    rowGap: 16,
+  },
   subtext: {
     fontFamily: Fonts.inter400,
     color: colors.textSecondary,

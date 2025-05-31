@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   TextInput,
@@ -21,8 +21,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { isAndroid } from '../utils/helperFunctions';
 import { colors } from '../constants/colors';
-// import {colors} from '../../assets/colors';
- 
+
 export interface AnimatedInputProps extends TextInputProps {
   backgroundColor?: ColorValue;
   borderColor?: ColorValue;
@@ -32,14 +31,15 @@ export interface AnimatedInputProps extends TextInputProps {
   right?: React.ReactNode;
   inputHeight?: number;
   onFocusPress: () => void;
+  secureTextEntry?: boolean;
 }
- 
+
 export interface PlaceholderProps
   extends Pick<TextInputProps, 'placeholder' | 'placeholderTextColor'>,
     Pick<AnimatedInputProps, 'backgroundColor' | 'placeholderTextStyle'> {
   placeholderAnimationProgress: Animated.SharedValue<number>;
 }
- 
+
 const AnimatedTextInput = React.forwardRef<TextInput, AnimatedInputProps>(
   (
     {
@@ -59,20 +59,21 @@ const AnimatedTextInput = React.forwardRef<TextInput, AnimatedInputProps>(
       multiline,
       inputHeight,
       onFocusPress,
+      secureTextEntry,
       ...rest
     }: AnimatedInputProps,
     ref,
   ) => {
     const [text, setText] = useState(defaultValue ?? '');
     const [isFocused, setIsFocused] = useState(false);
- 
+
     const inputRef = ref ?? useRef<TextInput>(null);
- 
+
     const styles = {
       container: {
-        borderColor: 'green',
+        borderColor: isFocused ? colors.gradientstartColor : colors.trustBase,
         paddingVertical: !isAndroid && multiline ? 12 : undefined,
-        borderWidth: 2,
+        borderWidth: 1.2,
         height: inputHeight ? inputHeight : multiline ? 90 : 48,
         fontSize: 16,
         borderRadius: 15,
@@ -81,39 +82,39 @@ const AnimatedTextInput = React.forwardRef<TextInput, AnimatedInputProps>(
         ...containerStyle,
       } as ViewStyle,
       textInput: {
+        color: secureTextEntry ? colors.textSecondary : colors.black, // Dynamic color based on secureTextEntry
         fontSize: 16,
         flex: 1,
-        paddingHorizontal: 20,
+        paddingHorizontal: 10,
         paddingVertical: 0,
         margin: 0,
         height: '100%',
       },
- 
       textInput2: {
         textAlignVertical: 'top',
         marginVertical: 12,
         height: (inputHeight || 90) - 18,
       } as TextInputProps['style'],
     };
- 
-    // ---> Animations
+
+    // Animations
     const deleteButtonAnimationProgress = useSharedValue(text === '' ? 0 : 1);
     const placeholderAnimationProgress = useSharedValue(text === '' ? 0 : 1);
- 
+
     useEffect(() => {
       deleteButtonAnimationProgress.value = withTiming(text === '' ? 0 : 1);
       placeholderAnimationProgress.value = withDelay(
         20,
-        withTiming(text === '' && !isFocused ? 0 : 1, {duration: 350}),
+        withTiming(text === '' && !isFocused ? 0 : 1, { duration: 350 }),
       );
     }, [isFocused, text]);
- 
-    // ---> Functions
+
+    // Functions
     const focusInput = () => {
       // @ts-ignore
       inputRef?.current?.focus();
     };
- 
+
     const handleFocus = (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
       setIsFocused(true);
       onFocus?.(e);
@@ -126,20 +127,25 @@ const AnimatedTextInput = React.forwardRef<TextInput, AnimatedInputProps>(
       setText(text);
       onChangeText?.(text);
     };
- 
+
+    const derivedPlaceholderColor =
+      isFocused || text.length > 0
+        ? colors.gradientendColor
+        : colors.textSecondary;
+
     return (
       <TouchableWithoutFeedback onPress={onFocusPress}>
         <View
           style={{
-            borderWidth: 2,
-            borderColor: isFocused ? 'pink' : 'transparent',
-            borderRadius: 17,
+            borderWidth: 4,
+            borderColor: isFocused ? colors.borderShadowFocus : 'transparent',
+            borderRadius: 20,
           }}>
           <View style={[styles.container]}>
             <Placeholder
               {...{
                 placeholder,
-                placeholderTextColor,
+                placeholderTextColor: derivedPlaceholderColor,
                 placeholderTextStyle,
                 placeholderAnimationProgress,
                 backgroundColor,
@@ -147,7 +153,7 @@ const AnimatedTextInput = React.forwardRef<TextInput, AnimatedInputProps>(
                 inputHeight,
               }}
             />
- 
+
             <TextInput
               {...rest}
               multiline={multiline}
@@ -155,17 +161,16 @@ const AnimatedTextInput = React.forwardRef<TextInput, AnimatedInputProps>(
               style={[
                 styles.textInput,
                 style,
-                multiline && isAndroid
-                  ? styles.textInput2
-                  : undefined,
+                multiline && isAndroid ? styles.textInput2 : undefined,
               ]}
               ref={inputRef}
               value={text}
               onChangeText={handleChangeText}
               onFocus={handleFocus}
               onBlur={handleBlur}
+              secureTextEntry={secureTextEntry}
             />
- 
+
             {right}
           </View>
         </View>
@@ -173,6 +178,7 @@ const AnimatedTextInput = React.forwardRef<TextInput, AnimatedInputProps>(
     );
   },
 );
+
 const Placeholder = ({
   placeholder,
   placeholderTextColor,
@@ -181,7 +187,7 @@ const Placeholder = ({
   backgroundColor,
   multiline,
   inputHeight,
-}: PlaceholderProps & {multiline?: boolean; inputHeight?: number}) => {
+}: PlaceholderProps & { multiline?: boolean; inputHeight?: number }) => {
   const styles = {
     placeholderContainerStyle: useAnimatedStyle(() => ({
       marginTop: multiline ? 12 : undefined,
@@ -207,7 +213,7 @@ const Placeholder = ({
             [0.765, multiline ? -22 : -24],
           ),
         },
-        {translateX: 20},
+        { translateX: 20 },
       ],
     })),
     placeholderStyle: useAnimatedStyle(() => ({
@@ -221,7 +227,7 @@ const Placeholder = ({
       ...placeholderTextStyle,
     })),
   };
- 
+
   return (
     <>
       {placeholder && placeholder !== '' ? (
@@ -236,9 +242,9 @@ const Placeholder = ({
     </>
   );
 };
- 
+
 export default AnimatedTextInput;
- 
+
 const styles = StyleSheet.create({
   input: {
     paddingVertical: 0,
@@ -246,4 +252,3 @@ const styles = StyleSheet.create({
     height: '100%',
   },
 });
- 

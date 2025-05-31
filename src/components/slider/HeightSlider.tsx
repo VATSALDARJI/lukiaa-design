@@ -1,6 +1,15 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, StyleProp, ViewStyle, TextStyle } from 'react-native';
+import React, {useState} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  StyleProp,
+  ViewStyle,
+  TextStyle,
+} from 'react-native';
 import Slider from '@react-native-community/slider';
+import {colors} from '../../constants/colors';
+import {Fonts} from '../../assets/fonts/Customfont';
 
 // Define the interface for the component props
 interface HeightSliderProps {
@@ -60,43 +69,50 @@ const HeightSlider: React.FC<HeightSliderProps> = ({
     <View style={[styles.section, containerStyle]}>
       <Text style={[styles.title, titleStyle]}>{title}</Text>
       <Text style={[styles.description, descriptionStyle]}>{description}</Text>
-      <View style={styles.heightValueContainer}>
-        <Text style={[styles.heightValue, heightValueStyle]}>
-          {inchesToFeet(heightInInches)} ({inchesToCm(heightInInches)} cm)
-        </Text>
+      <View style={styles.heightBox}>
+        <View style={styles.heightValueContainer}>
+          <Text style={[styles.heightValue, heightValueStyle]}>
+            {inchesToFeet(heightInInches)} ({inchesToCm(heightInInches)} cm)
+          </Text>
+        </View>
+        <Slider
+          style={[styles.slider, sliderStyle]}
+          minimumValue={minHeight}
+          maximumValue={maxHeight}
+          step={1}
+          value={heightInInches}
+          onValueChange={handleValueChange}
+          minimumTrackTintColor={minimumTrackTintColor}
+          maximumTrackTintColor={maximumTrackTintColor}
+          thumbTintColor={thumbTintColor}
+        />
       </View>
-      <Slider
-        style={[styles.slider, sliderStyle]}
-        minimumValue={minHeight}
-        maximumValue={maxHeight}
-        step={1}
-        value={heightInInches}
-        onValueChange={handleValueChange}
-        minimumTrackTintColor={minimumTrackTintColor}
-        maximumTrackTintColor={maximumTrackTintColor}
-        thumbTintColor={thumbTintColor}
-      />
     </View>
   );
 };
 
 // Define styles using StyleSheet
 const styles = StyleSheet.create({
+  heightBox: {
+    backgroundColor: '#d0e2ff',
+    borderRadius: 14,
+    padding: 10,
+    paddingHorizontal: 10,
+  },
   section: {
-    padding: 20,
-    backgroundColor: '#F9FAFB',
     borderRadius: 10,
     marginVertical: 10,
   },
   title: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#111827',
+    fontSize: 16,
+    fontFamily: Fonts.inter500,
+    color: colors.textPrimary,
     marginBottom: 5,
   },
   description: {
     fontSize: 14,
-    color: '#6B7280',
+    fontFamily: Fonts.inter400,
+    color: colors.textSecondary,
     marginBottom: 10,
   },
   heightValueContainer: {
@@ -105,8 +121,8 @@ const styles = StyleSheet.create({
   },
   heightValue: {
     fontSize: 16,
-    fontWeight: '500',
-    color: '#111827',
+    fontFamily: Fonts.inter500,
+    color: colors.textPrimary,
   },
   slider: {
     width: '100%',

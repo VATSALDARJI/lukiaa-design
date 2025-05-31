@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     padding: 14,
     borderRadius: 12,
     borderWidth: 1.5,
-    borderColor: '#ccc',
+    borderColor: colors.trustBase,
     backgroundColor: '#fff',
   },
   focusedInnerBox: {

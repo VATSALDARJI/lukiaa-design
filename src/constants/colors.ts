@@ -9,6 +9,7 @@ export const colors = {
   errorAlert: '#F87171',
   gradientstartColor: '#6B48FF',
   gradientendColor: '#FF6B6B',
+  borderShadowFocus: 'rgba(107, 72, 255, 0.05)',
 
   borderColor: '#E0E0E0',
   disabled: '#C4C4C4',

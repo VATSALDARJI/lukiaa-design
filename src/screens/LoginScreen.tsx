@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, {useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -8,20 +8,25 @@ import {
   Platform,
   SafeAreaView,
   Image,
+  TouchableOpacity,
 } from 'react-native';
-import { useForm, Controller } from 'react-hook-form';
+import {useForm, Controller} from 'react-hook-form';
 import CustomInput from '../common/CustomInput';
-import { Fonts } from '../assets/fonts/Customfont';
+import {Fonts} from '../assets/fonts/Customfont';
 import CardWrapper from '../common/CardWrapper';
-import { colors } from '../constants/colors';
+import {colors} from '../constants/colors';
 import CustomButton from '../common/CustumButton';
-import { CustomImages } from '../assets/images';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LoginApi } from '../axios/PostApis';
-import { useMutation } from '@tanstack/react-query';
-import { AppLoaderRef } from '../navigation/RootScreen';
-import { CustomToaster } from '../components/toaster/CustomToaster';
-import { ALERT_TYPE } from 'react-native-alert-notification';
+import {CustomImages} from '../assets/images';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {LoginApi} from '../axios/PostApis';
+import {useMutation} from '@tanstack/react-query';
+import {AppLoaderRef} from '../navigation/RootScreen';
+import {CustomToaster} from '../components/toaster/CustomToaster';
+import {ALERT_TYPE} from 'react-native-alert-notification';
+import AnimatedTextInput from '../components/AnimatedTextInput';
+import ErrorText from '../common/ErrorText';
+import {useToast} from 'react-native-toast-notifications';
+import { ScreenProps } from '../navigation/Stack';
 
 // Define type to match LoginApi
 type LoginFormData = {
@@ -29,8 +34,12 @@ type LoginFormData = {
   password: string;
 };
 
-const LoginScreen = ({ navigation }) => {
-  const { control, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
+const LoginScreen:React.FC<ScreenProps<'Login'>> = ({navigation}) => {
+  const {
+    control,
+    handleSubmit,
+    formState: {errors},
+  } = useForm<LoginFormData>({
     defaultValues: {
       identifier: '',
       password: '',
@@ -38,10 +47,13 @@ const LoginScreen = ({ navigation }) => {
   });
   const identifierRef = useRef(null);
   const passwordRef = useRef(null);
-  const { top, bottom } = useSafeAreaInsets();
+  const {top, bottom} = useSafeAreaInsets();
+  const [show, setShow] = useState(true);
 
   // ✅ Login mutation
-  const { mutate } = useMutation({
+  const toast = useToast();
+
+  const {mutate} = useMutation({
     mutationFn: LoginApi,
     onMutate: () => {
       AppLoaderRef.current?.start(); // Show loader
@@ -49,23 +61,25 @@ const LoginScreen = ({ navigation }) => {
     onSuccess: data => {
       console.log('Login Success:', data);
       CustomToaster({
-        message: 'Login Successfully!!!',
         type: ALERT_TYPE.SUCCESS,
+        message: 'Login Successfully!!!',
       });
-      navigation.navigate('AccountVerify'); // Moved navigation here for consistency
+      navigation.navigate('AccountVerify');
     },
     onError: error => {
       console.error('Login Error:', error);
       CustomToaster({
-        message: error.message ?? 'Something went wrong',
         type: ALERT_TYPE.DANGER,
+        message: error.message ?? 'Something went wrong.',
       });
     },
     onSettled: () => {
       AppLoaderRef.current?.stop(); // Hide loader
+      navigation.navigate('AccountVerify')
     },
   });
 
+  
   const onSubmit = (data: LoginFormData) => {
     console.log('Login payload:', data);
     mutate(data); // Call the mutation with form data
@@ -74,10 +88,10 @@ const LoginScreen = ({ navigation }) => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{ flex: 1 }}>
+      style={{flex: 1}}>
       <ScrollView
-        style={[styles.scrollView, { marginTop: top, marginBottom: bottom }]}
-        contentContainerStyle={{ flexGrow: 1 }}
+        style={[styles.scrollView, {marginTop: top, marginBottom: bottom}]}
+        contentContainerStyle={{flexGrow: 1}}
         showsVerticalScrollIndicator
         keyboardShouldPersistTaps="handled">
         <View style={styles.innerContent}>
@@ -92,63 +106,114 @@ const LoginScreen = ({ navigation }) => {
           </View>
           <CardWrapper>
             <View style={styles.container}>
-              <Controller
-                control={control}
-                name="identifier"
-                rules={{
-                  required: 'Email/Phone is required',
-                  pattern: {
-                    // Supports email or phone number
-                    value: /^(?:[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}|[0-9]{10})$/,
-                    message: 'Enter a valid email or 10-digit phone number',
-                  },
-                }}
-                render={({ field: { onChange, value }, fieldState: { isTouched } }) => (
-                  <CustomInput
-                    label="Email/Phone"
-                    value={value}
-                    onChange={onChange}
-                    ref={identifierRef}
-                    isFocus={isTouched}
-                    isValue={value.length > 0}
-                    onFocusChange={() => {}}
-                    onBlurChange={() => {}}
-                    showIcon
-                    iconSource={CustomImages.contact}
-                    error={errors.identifier?.message}
+              <View style={styles.inputContainer}>
+                <View>
+                  <Controller
+                    control={control}
+                    name="identifier"
+                    rules={{
+                      required: 'Email/Phone is required',
+                      pattern: {
+                        // Supports email or phone number
+                        value:
+                          /^(?:[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}|[0-9]{10})$/,
+                        message: 'Enter a valid email or 10-digit phone number',
+                      },
+                    }}
+                    render={({
+                      field: {onChange, value},
+                      fieldState: {isTouched},
+                    }) => (
+                      <AnimatedTextInput
+                        placeholder="Email/Phone"
+                        placeholderTextStyle={[
+                          isTouched && {color: colors.accent},
+                        ]}
+                        defaultValue={value}
+                        onChangeText={onChange}
+                        onFocusPress={() => identifierRef?.current?.focus()}
+                        borderColor={
+                          errors.identifier
+                            ? colors.errorAlert
+                            : colors.inputBorder
+                        }
+                        right={
+                          <TouchableOpacity style={styles.secureButton}>
+                            <Image
+                              source={CustomImages.mail}
+                              style={styles.mailIcon}
+                              tintColor={colors.textSecondary}
+                            />
+                          </TouchableOpacity>
+                        }
+                        backgroundColor={colors.white}
+                        placeholderTextColor={colors.textSecondary}
+                        ref={identifierRef}
+                      />
+                    )}
                   />
-                )}
-              />
-              {errors.identifier && <Text style={styles.errorText}>{errors.identifier.message}</Text>}
-
-              <Controller
-                control={control}
-                name="password"
-                rules={{
-                  required: 'Password is required',
-                  minLength: {
-                    value: 6,
-                    message: 'Password must be at least 6 characters',
-                  },
-                }}
-                render={({ field: { onChange, value }, fieldState: { isTouched } }) => (
-                  <CustomInput
-                    label="Password"
-                    value={value}
-                    onChange={onChange}
-                    isPassword
-                    ref={passwordRef}
-                    isFocus={isTouched}
-                    isValue={value.length > 0}
-                    onFocusChange={() => {}}
-                    onBlurChange={() => {}}
-                    iconStyle={{ width: 24, height: 24 }}
-                    error={errors.password?.message}
+                  {errors.identifier && (
+                    <ErrorText
+                      visible={errors.identifier?.message}
+                      message={errors.identifier?.message}
+                    />
+                  )}
+                </View>
+                <View>
+                  <Controller
+                    control={control}
+                    name="password"
+                    rules={{
+                      required: 'Password is required',
+                      minLength: {
+                        value: 6,
+                        message: 'Password must be at least 6 characters',
+                      },
+                    }}
+                    render={({
+                      field: {onChange, value},
+                      fieldState: {isTouched},
+                    }) => (
+                      <AnimatedTextInput
+                        placeholder="Password"
+                        defaultValue={value}
+                        onChangeText={onChange}
+                        secureTextEntry={show}
+                        onFocusPress={() => passwordRef?.current?.focus()}
+                        borderColor={
+                          errors.password
+                            ? colors.errorAlert
+                            : colors.inputBorder
+                        }
+                        backgroundColor={colors.white}
+                        placeholderTextColor={colors.textSecondary}
+                        ref={passwordRef}
+                        right={
+                          <TouchableOpacity
+                            onPress={() => setShow(!show)}
+                            style={styles.secureButton}>
+                            <Image
+                              source={
+                                show
+                                  ? CustomImages.eyeClose
+                                  : CustomImages.eyeOpen
+                              }
+                              style={styles.eyeStyle}
+                              tintColor={colors.textSecondary}
+                            />
+                          </TouchableOpacity>
+                        }
+                      />
+                    )}
                   />
-                )}
-              />
-              {errors.password && <Text style={styles.errorText}>{errors.password.message}</Text>}
-
+                  {errors.password && (
+                    <ErrorText
+                      visible={errors.password?.message}
+                      message={errors.password?.message}
+                    />
+                  )}
+                </View>
+              </View>
               <CustomButton
                 title="Login"
                 btnStyle={styles.button}
@@ -175,6 +240,20 @@ const LoginScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  inputContainer: {
+    rowGap: 16,
+  },
+  mailIcon: {
+    width: 18,
+    height: 18,
+  },
+  secureButton: {
+    marginRight: 10,
+  },
+  eyeStyle: {
+    width: 22,
+    height: 22,
+  },
   innerContent: {
     justifyContent: 'center',
     marginTop: 70,
