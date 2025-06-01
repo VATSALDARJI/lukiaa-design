@@ -16,8 +16,11 @@ const AxiosInstance = axios.create({
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
-    // "Content-Type": "multipart/form-data",
-    // "secret-key": "c2a7fecd-a1a1-43e0-86b9-3c7eb9a04ec1",
+    'Accept-Encoding': 'gzip, deflate, br', // Added to match Postman
+    // 'Connection': 'keep-alive', // Not needed, as it's the default
+    // Add other default headers if needed
+    // 'User-Agent': 'MyApp/1.0',
+    // 'Accept-Language': 'en-US',
   },
 });
 

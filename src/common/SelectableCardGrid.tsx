@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -9,14 +9,14 @@ import {
   ImageSourcePropType,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { colors } from '../constants/colors';
-import { Fonts } from '../assets/fonts/Customfont';
+import {colors} from '../constants/colors';
+import {Fonts} from '../assets/fonts/Customfont';
 
 // Interface for props
 interface SelectableCardGridProps {
-  data: { id: string; emoji: ImageSourcePropType; label: string }[];
+  data: {id: string; emoji: ImageSourcePropType; label: string}[];
   isMultiSelect?: boolean;
-  onSelectionChange?: (selectedIds: string[]) => void;
+  onSelectionChange?: (selected: string[] | string) => void;
   columns?: number;
   title?: string;
   description?: string;
@@ -40,15 +40,20 @@ const SelectableCardGrid = ({
       updated = selected.includes(id)
         ? selected.filter(item => item !== id)
         : [...selected, id];
+      setSelected(updated);
+      onSelectionChange(updated);
     } else {
       updated = [id];
+      setSelected(updated);
+      onSelectionChange(id); // single selection returns string
     }
-
-    setSelected(updated);
-    onSelectionChange(updated);
   };
 
-  const renderItem = ({ item }: { item: { id: string; emoji: ImageSourcePropType; label: string } }) => {
+  const renderItem = ({
+    item,
+  }: {
+    item: {id: string; emoji: ImageSourcePropType; label: string};
+  }) => {
     const isSelected = selected.includes(item.id);
     const isHovered = hoveredId === item.id;
 
@@ -69,8 +74,8 @@ const SelectableCardGrid = ({
             {isSelected ? (
               <LinearGradient
                 colors={[colors.gradientstartColor, colors.gradientendColor]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
+                start={{x: 0, y: 0}}
+                end={{x: 1, y: 1}}
                 style={styles.gradient}>
                 <View style={styles.content}>
                   <Image source={item.emoji} style={styles.emoji} />
@@ -161,7 +166,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   cardHovered: {
-    transform: [{ translateY: -4 }],
+    transform: [{translateY: -4}],
     borderColor: colors.gradientstartColor,
     // Removed backgroundColor: colors.white to prevent white flash
   },

@@ -125,6 +125,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     lineHeight: 18.2,
+    textTransform: 'capitalize',
   },
   icon: {
     width: 14,
@@ -147,6 +148,7 @@ const styles = StyleSheet.create({
   itemText: {
     fontSize: 16,
     color: '#000',
+    textTransform: 'capitalize',
   },
   selectedItem: {
     backgroundColor: 'rgba(107, 72, 255, 0.2)',

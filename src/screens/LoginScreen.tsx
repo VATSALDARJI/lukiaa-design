@@ -26,7 +26,9 @@ import {ALERT_TYPE} from 'react-native-alert-notification';
 import AnimatedTextInput from '../components/AnimatedTextInput';
 import ErrorText from '../common/ErrorText';
 import {useToast} from 'react-native-toast-notifications';
-import { ScreenProps } from '../navigation/Stack';
+import {ScreenProps} from '../navigation/Stack';
+import {useDispatch} from 'react-redux';
+import {login} from '../redux/slice/authSlice';
 
 // Define type to match LoginApi
 type LoginFormData = {
@@ -34,7 +36,7 @@ type LoginFormData = {
   password: string;
 };
 
-const LoginScreen:React.FC<ScreenProps<'Login'>> = ({navigation}) => {
+const LoginScreen: React.FC<ScreenProps<'Login'>> = ({navigation}) => {
   const {
     control,
     handleSubmit,
@@ -49,6 +51,7 @@ const LoginScreen:React.FC<ScreenProps<'Login'>> = ({navigation}) => {
   const passwordRef = useRef(null);
   const {top, bottom} = useSafeAreaInsets();
   const [show, setShow] = useState(true);
+  const dispatch = useDispatch();
 
   // ✅ Login mutation
   const toast = useToast();
@@ -64,7 +67,7 @@ const LoginScreen:React.FC<ScreenProps<'Login'>> = ({navigation}) => {
         type: ALERT_TYPE.SUCCESS,
         message: 'Login Successfully!!!',
       });
-      navigation.navigate('AccountVerify');
+      dispatch(login({username: data?.username, token: data?.data?.token}));
     },
     onError: error => {
       console.error('Login Error:', error);
@@ -75,11 +78,9 @@ const LoginScreen:React.FC<ScreenProps<'Login'>> = ({navigation}) => {
     },
     onSettled: () => {
       AppLoaderRef.current?.stop(); // Hide loader
-      navigation.navigate('AccountVerify')
     },
   });
 
-  
   const onSubmit = (data: LoginFormData) => {
     console.log('Login payload:', data);
     mutate(data); // Call the mutation with form data
@@ -130,7 +131,7 @@ const LoginScreen:React.FC<ScreenProps<'Login'>> = ({navigation}) => {
                           isTouched && {color: colors.accent},
                         ]}
                         defaultValue={value}
-                        onChangeText={onChange}
+                        onChangeText={text => onChange(text.toLowerCase())}
                         onFocusPress={() => identifierRef?.current?.focus()}
                         borderColor={
                           errors.identifier

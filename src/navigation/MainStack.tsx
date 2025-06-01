@@ -6,10 +6,17 @@ import EngagingScreen from '../screens/EngagingScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import CustomHeader from '../components/header/CustomHeader';
 import ProfileScreenTwo from '../screens/ProfileScreenTwo';
+import ProgressIndicator from '../components/header/CustomHeader';
 
 export type MainStackParams = {
   ProfileScreen: undefined;
-  ProfileScreenTwo: undefined;
+  ProfileScreenTwo: {
+    height: number;
+    gender: string;
+    age: string;
+    bodyShape: string[];
+    bodyType: string[];
+  };
   EngagingScreen: undefined;
 };
 
@@ -23,22 +30,23 @@ export const MainStack = () => {
         screenOptions={() => ({
           contentStyle: styles.commonContentStyle,
           headerShown: false,
+          // statusBarStyle:colors.white
         })}>
         <Stack.Screen name="EngagingScreen" component={EngagingScreen} />
         <Stack.Screen
           name="ProfileScreen"
           component={ProfileScreen}
           options={{
-            header: () => <CustomHeader />,
-            headerShown: true,
+            // header: () => <ProgressIndicator isPageOneComplete={false} />,
+            // headerShown: true,
           }}
         />
         <Stack.Screen
-          name='ProfileScreenTwo'
+          name="ProfileScreenTwo"
           component={ProfileScreenTwo}
           options={{
-            header: () => <CustomHeader />,
-            headerShown: true,
+            // header: () => <ProgressIndicator isPageOneComplete={false} />,
+            // headerShown: true,
           }}
         />
       </Stack.Navigator>

@@ -1,45 +1,110 @@
-import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
-import LinearGradient from 'react-native-linear-gradient';
+import {View, Text, StyleSheet} from 'react-native';
 import {colors} from '../../constants/colors';
+import {Fonts} from '../../assets/fonts/Customfont';
+import LinearGradient from 'react-native-linear-gradient';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import CustomSelect from '../../common/CustomSelect';
 
-interface CustomHeaderInterface {
-  title?: string;
+interface ProgressIndicatorProps {
+  isPageOneComplete: boolean;
+  isPageTwoComplete: boolean;
 }
 
-const CustomHeader: React.FC<CustomHeaderInterface> = ({title = 'Header'}) => {
+const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
+  isPageOneComplete,
+  isPageTwoComplete,
+}) => {
   const {top} = useSafeAreaInsets();
   return (
     <LinearGradient
-      colors={[colors.gradientstartColor, colors.gradientendColor]}
-      start={{x: 0, y: 0}}
-      end={{x: 1, y: 0}}
+      colors={[colors.gradientstartColor, colors.gradientendColor]} // Gradient from purple to pink
+      start={{x: 0, y: 0}} // Gradient starts from the left
+      end={{x: 1, y: 0}} // Gradient ends on the right
       style={styles.gradient}>
       <View style={[styles.container, {paddingTop: top}]}>
-        <Text style={styles.title}>{title}</Text>
-        
+        {/* Page 1 */}
+        <View style={styles.stepContainer}>
+          <View
+            style={[styles.circle, isPageOneComplete && styles.circleComplete]}>
+            <Text
+              style={[
+                styles.circleText,
+                isPageOneComplete && styles.circleTextComplete,
+              ]}>
+              {isPageOneComplete ? '✔' : '1'}
+            </Text>
+          </View>
+        </View>
+
+        {/* Connecting Line */}
+        <View style={[styles.line, isPageOneComplete && styles.lineComplete]} />
+
+        {/* Page 2 */}
+        <View style={styles.stepContainer}>
+          <View
+            style={[styles.circle, isPageTwoComplete && styles.circleComplete]}>
+            <Text
+              style={[
+                styles.circleText,
+                isPageTwoComplete && styles.circleTextComplete,
+              ]}>
+              {isPageTwoComplete ? '✔' : '2'}
+            </Text>
+          </View>
+        </View>
       </View>
     </LinearGradient>
   );
 };
 
-export default CustomHeader;
-
 const styles = StyleSheet.create({
-  gradient: {
-    justifyContent: 'center',
-  },
+  gradient: {},
   container: {
-    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    width: '50%',
+    alignSelf: 'center',
+  },
+  stepContainer: {
+    alignItems: 'center',
+  },
+  circle: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: colors.trustBase,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 16,
+    marginBottom: 8,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
+  circleComplete: {
+    backgroundColor: 'green',
+  },
+  circleText: {
+    fontFamily: Fonts.inter700,
+    fontSize: 16,
+    color: colors.gradientstartColor,
+  },
+  circleTextComplete: {
+    color: colors.white,
+  },
+  line: {
+    flex: 1,
+    height: 2,
+    backgroundColor: colors.trustBase,
+    marginHorizontal: 10,
+  },
+  lineComplete: {
+    backgroundColor: 'green',
+  },
+  label: {
+    fontFamily: Fonts.inter400,
+    fontSize: 12,
+    color: colors.textSecondary,
   },
 });
+
+export default ProgressIndicator;

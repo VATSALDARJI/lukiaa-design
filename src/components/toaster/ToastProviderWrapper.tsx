@@ -17,8 +17,8 @@ const CustomToastWrapper: React.FC<CustomToastWrapperProps> = ({children}) => {
           danger: '#FF6347', // Danger/Error color
           warning: colors.warning, // Warning color
           info: colors.gradientstartColor, // Info color
-          card: colors.borderShadowFocus, // Card background color
-          label: colors.textPrimary, // Label text color
+          card: colors.gradientstartColor, // Card background color
+          label: colors.white, // Label text color
         },
         {
           overlay: '#ffffff', // Overlay background color (dark theme)
@@ -26,8 +26,8 @@ const CustomToastWrapper: React.FC<CustomToastWrapperProps> = ({children}) => {
           danger: '#FF6347', // Danger/Error color
           warning: colors.warning, // Warning color
           info: colors.gradientstartColor, // Info color
-          card: colors.borderShadowFocus, // Card background color
-          label: colors.textPrimary, // Label text color
+          card: colors.gradientstartColor, // Card background color
+          label: colors.white, // Label text color
         },
       ]}>
       {children}

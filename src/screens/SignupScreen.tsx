@@ -60,25 +60,26 @@ const SignupScreen: React.FC<ScreenProps<'Signup'>> = ({navigation}) => {
         message: 'Signup Successfully!!!',
         type: ALERT_TYPE.SUCCESS,
       });
-      navigation.navigate('Login');
+      navigation.navigate('AccountVerify',{
+        userId:data?.data?.userId
+      });
     },
     onError: error => {
       console.error('Signup Error:', error);
       CustomToaster({
-        message: error.message ?? 'Something went wrong',
+        message: error?.data?.message ?? 'Something went wrong',
         type: ALERT_TYPE.DANGER,
       });
     },
     onSettled: () => {
       AppLoaderRef.current?.stop();
-      navigation.navigate('AccountVerify');
     },
   });
 
   const onSubmit = data => {
     const payload = {
       nickName: data.name,
-      email: data.email,
+      email: data.email.toLowerCase(),
       password: data.password,
     };
     mutate(payload);
@@ -155,7 +156,7 @@ const SignupScreen: React.FC<ScreenProps<'Signup'>> = ({navigation}) => {
                         <AnimatedTextInput
                           placeholder="Email/Phone"
                           defaultValue={value}
-                          onChangeText={onChange}
+                          onChangeText={text => onChange(text.toLowerCase())}
                           backgroundColor={colors.white}
                           isFocus={isTouched}
                           isValue={value?.length > 0}

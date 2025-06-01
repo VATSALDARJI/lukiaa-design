@@ -10,7 +10,9 @@ import EngagingScreen from '../screens/EngagingScreen';
 export type AuthParams = {
   Login: undefined;
   Signup: undefined;
-  AccountVerify: undefined;
+  AccountVerify: {
+    userId: number;
+  };
 };
 
 const Stack = createNativeStackNavigator<AuthParams>();

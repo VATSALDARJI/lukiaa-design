@@ -1,8 +1,7 @@
-import React, {useRef, useState} from 'react';
+import React, {useRef, useState, useEffect} from 'react';
 import {
   View,
   TextInput,
-  Button,
   StyleSheet,
   Text,
   Alert,
@@ -11,96 +10,136 @@ import {
   ScrollView,
   Image,
 } from 'react-native';
-import CardWrapper from '../common/CardWrapper';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import CustomButton from '../common/CustumButton';
+// Fixed typo (CustumButton -> CustomButton)
 import {colors} from '../constants/colors';
 import {useCommonStyles} from '../common/CommonStyle';
 import {Fonts} from '../assets/fonts/Customfont';
 import {CustomImages} from '../assets/images';
 import {useDispatch} from 'react-redux';
 import {login} from '../redux/slice/authSlice';
+import {useMutation} from '@tanstack/react-query';
+import {OtpVerificationApi} from '../axios/PostApis';
+import {AppLoaderRef} from '../navigation/RootScreen';
+import {CustomToaster} from '../components/toaster/CustomToaster';
+import {ALERT_TYPE} from 'react-native-alert-notification';
+import {ScreenProps} from '../navigation/Stack';
+import CustomButton from '../common/CustumButton';
 
-const AccountVerifyScreen: React.FC = ({navigation}) => {
-  const [otp, setOtp] = useState(new Array(6).fill(''));
-  const inputsRef = useRef([]);
-  const {title} = useCommonStyles();
-  const disptach = useDispatch();
+// Define props for type safety
+type AccountVerifyScreenProps = ScreenProps<'AccountVerify'>;
 
-  const handleChange = (text, index) => {
+const AccountVerifyScreen: React.FC<AccountVerifyScreenProps> = ({
+  navigation,
+  route,
+}) => {
+  const [otp, setOtp] = useState<string[]>(new Array(6).fill(''));
+  const inputsRef = useRef<(TextInput | null)[]>([]);
+  const {title: titleStyle} = useCommonStyles();
+  const dispatch = useDispatch(); // Fixed typo (disptach -> dispatch)
+  const {top, bottom} = useSafeAreaInsets();
+
+  const {userId} = route.params;
+  console.log(userId, 'userid');
+
+  const handleChange = (text: string, index: number) => {
     if (/^[0-9]$/.test(text) || text === '') {
       const newOtp = [...otp];
       newOtp[index] = text;
       setOtp(newOtp);
 
       if (text && index < 5) {
-        // Move to next input only if a digit is entered
-        inputsRef.current[index + 1].focus();
+        inputsRef.current[index + 1]?.focus();
       } else if (text === '' && index > 0) {
-        // Move to previous input if current is cleared
-        inputsRef.current[index - 1].focus();
+        inputsRef.current[index - 1]?.focus();
       }
     }
   };
 
-  const handleKeyPress = (e, index) => {
+  const handleKeyPress = (e: any, index: number) => {
     if (e.nativeEvent.key === 'Backspace') {
       const newOtp = [...otp];
       if (otp[index] !== '') {
-        // Clear current input
         newOtp[index] = '';
         setOtp(newOtp);
         if (index > 0) {
-          inputsRef.current[index - 1].focus();
+          inputsRef.current[index - 1]?.focus();
         }
       } else if (index > 0) {
-        // Clear previous input and move focus
         newOtp[index - 1] = '';
         setOtp(newOtp);
-        inputsRef.current[index - 1].focus();
+        inputsRef.current[index - 1]?.focus();
       }
     }
   };
 
-  const handleFocus = index => {
-    // Prevent focusing an input if previous inputs are not filled
+  const handleFocus = (index: number) => {
     for (let i = 0; i < index; i++) {
       if (otp[i] === '') {
-        inputsRef.current[i].focus();
+        inputsRef.current[i]?.focus();
         return;
       }
     }
   };
 
+  const {mutate, isLoading} = useMutation({
+    mutationFn: OtpVerificationApi,
+    onMutate: () => {
+      AppLoaderRef.current?.start();
+    },
+    onSuccess: data => {
+      console.log(data, 'data');
+      CustomToaster({
+        message: 'Account Verified Successfully!',
+        type: ALERT_TYPE.SUCCESS,
+      });
+      dispatch(login({username: data?.username, token: data?.data?.token}));
+      // navigation.navigate('Home'); // Navigate to Stuarts Creek to Home screen after successful verification
+    },
+    onError: (error: Error) => {
+      console.error('OTP Verification Error:', error);
+      CustomToaster({
+        message: error.message || 'Failed to verify OTP. Please try again.',
+        type: ALERT_TYPE.DANGER,
+      });
+    },
+    onSettled: () => {
+      AppLoaderRef.current?.stop();
+    },
+  });
+
   const handleSubmit = () => {
-    disptach(login({username: 'test', token: 'dummy'}));
-    return;
     const enteredOtp = otp.join('');
     if (enteredOtp.length === 6) {
-      // Add your verification logic here
+      mutate({userId, otp: enteredOtp});
     } else {
       Alert.alert('Error', 'Please enter the full 6-digit OTP');
     }
   };
 
-  const {top, bottom} = useSafeAreaInsets();
+  // Auto-submit when all OTP digits are filled
+  useEffect(() => {
+    if (otp.every(digit => digit !== '')) {
+      handleSubmit();
+    }
+  }, [otp, userId]);
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{flex: 1}}>
+      style={styles.keyboardAvoidingView}>
       <ScrollView
         style={[styles.scrollView, {marginTop: top, marginBottom: bottom}]}
-        contentContainerStyle={{flexGrow: 1, justifyContent: 'center'}}
-        showsVerticalScrollIndicator
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled">
         <View style={styles.innerContent}>
           <View style={styles.header}>
-            <Text style={title}>Account Verification</Text>
+            <Text style={[titleStyle, styles.title]}>Account Verification</Text>
           </View>
-          <View style={styles.otpcontent}>
+          <View style={styles.otpContent}>
             <Image style={styles.logo} source={CustomImages.verifyLogo} />
-            <Text style={styles.title}>Enter verification code</Text>
+            <Text style={styles.subtitle}>Enter verification code</Text>
             <View style={styles.otpContainer}>
               {otp.map((digit, index) => (
                 <TextInput
@@ -120,6 +159,7 @@ const AccountVerifyScreen: React.FC = ({navigation}) => {
               title="Submit"
               btnStyle={styles.button}
               onPress={handleSubmit}
+              disabled={isLoading || otp.some(digit => digit === '')}
               showIcon
             />
           </View>
@@ -130,45 +170,51 @@ const AccountVerifyScreen: React.FC = ({navigation}) => {
 };
 
 const styles = StyleSheet.create({
-  logo: {
-    width: 50,
-    height: 50,
-    marginHorizontal: 'auto',
-  },
-  otpcontent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    marginTop: 20,
-  },
-  header: {},
-  button: {},
   keyboardAvoidingView: {
     flex: 1,
+    backgroundColor: colors.background,
   },
   scrollView: {
     flex: 1,
   },
-  innerContent: {
+  scrollContent: {
+    flexGrow: 1,
     justifyContent: 'center',
-    paddingHorizontal: 24,
   },
-  container: {
+  innerContent: {
+    paddingHorizontal: 24,
+    justifyContent: 'center',
     flex: 1,
-    paddingTop: 100,
-    alignItems: 'center',
-    paddingHorizontal: 20,
+  },
+  header: {
+    marginBottom: 20,
   },
   title: {
     fontFamily: Fonts.inter600,
-    fontSize: 20,
+    fontSize: 24,
     textAlign: 'center',
-    marginVertical: 16,
-    marginTop: 10,
+    color: colors.textPrimary,
+  },
+  subtitle: {
+    fontFamily: Fonts.inter400,
+    fontSize: 16,
+    textAlign: 'center',
+    marginVertical: 10,
+    color: colors.textSecondary,
+  },
+  otpContent: {
+    alignItems: 'center',
+  },
+  logo: {
+    width: 50,
+    height: 50,
+    marginBottom: 16,
   },
   otpContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 24,
+    paddingHorizontal: 10,
   },
   inputBox: {
     width: 40,
@@ -176,10 +222,18 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 10,
     borderColor: colors.gradientstartColor,
-    // marginHorizontal: 5,
+    marginHorizontal: 5, // Added spacing
     fontSize: 14,
     lineHeight: 14,
     textAlign: 'center',
+    fontFamily: Fonts.inter500,
+    color: colors.textPrimary,
+  },
+  button: {
+    backgroundColor: colors.primary,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
   },
 });
 

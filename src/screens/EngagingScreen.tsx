@@ -19,11 +19,14 @@ import {useCommonStyles} from '../common/CommonStyle';
 import {Fonts} from '../assets/fonts/Customfont';
 import LinearGradient from 'react-native-linear-gradient';
 import {CustomImages} from '../assets/images';
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/rootReducer';
 
 const EngagingScreen: React.FC = ({navigation}) => {
-  const [otp, setOtp] = useState(new Array(6).fill(''));
-  const inputsRef = useRef([]);
   const {title, subText} = useCommonStyles();
+  const {token,username} = useSelector((state:RootState) => state.auth);
+  console.log(token,username,"details");
+  
 
   const handleNextNav = () => {
     navigation.navigate('ProfileScreen');
@@ -39,66 +42,79 @@ const EngagingScreen: React.FC = ({navigation}) => {
       start={{x: 1, y: 1}} // Start at bottom-right
       end={{x: 0, y: 0}} // End at top-left
       style={styles.gradient}>
-      <ScrollView
-        style={[styles.scrollView, {marginTop: top, marginBottom: bottom}]}
-        contentContainerStyle={{flexGrow: 1}}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled">
-        <View style={[styles.innerContent, {marginBottom: bottom}]}>
-          <View style={styles.topPart}>
-            <View style={styles.header}>
-              <Text style={[title, styles.title]}>Lukiaa</Text>
-            </View>
-            <View style={styles.commonContainer}>
-              <View style={[styles.otpcontent]}>
-                <View style={styles.secTitleBox}>
-                  <Text style={[title, styles.title, styles.secTitle]}>
-                    Hey there, I'm Lukiaa...
-                  </Text>
-                  <Image source={CustomImages.wave} style={styles.waveStyle} />
-                </View>
-
-                <Text style={styles.subtitle}>
-                  <Text style={{fontSize: 25}}>Y</Text>our personal AI stylist -
-                  I'm here to help you look and feel your best every day.{' '}
-                </Text>
+      <View
+        style={[
+          styles.outterContainer,
+          {marginTop: top, marginBottom: bottom + 20},
+        ]}>
+        <ScrollView
+          style={[styles.scrollView]}
+          contentContainerStyle={{flexGrow: 1}}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled">
+          <View style={[styles.innerContent, {marginBottom: bottom}]}>
+            <View style={styles.topPart}>
+              <View style={styles.header}>
+                <Text style={[title, styles.title]}>Lukiaa</Text>
               </View>
-              <Image
-                source={CustomImages.logo}
-                style={styles.sideChar}
-                resizeMode="cover"
-              />
-            </View>
-            <Text style={styles.thirdTitle}>
-              To style you best, I just need a few quicks details about your
-              look and perfrences.
-            </Text>
-            <View style={styles.whiteBox}>
-              <Image source={CustomImages.flash} style={styles.icon} />
-              <Text style={[subText, styles.whiteBoxText]}>
-                It takes less then a minute - and your style journey begins!
-              </Text>
-            </View>
-            <View style={styles.whiteBox}>
-              <Image source={CustomImages.target} style={styles.icon} />
-              <Text style={[subText, styles.whiteBoxText]}>
+              <View style={styles.commonContainer}>
+                <View style={[styles.otpcontent]}>
+                  <View style={styles.secTitleBox}>
+                    <Text style={[title, styles.title, styles.secTitle]}>
+                      Hey there, I'm Lukiaa...
+                    </Text>
+                    <Image
+                      source={CustomImages.wave}
+                      style={styles.waveStyle}
+                    />
+                  </View>
+
+                  <Text style={styles.subtitle}>
+                    <Text style={{fontSize: 25}}>Y</Text>our personal AI stylist
+                    - I'm here to help you look and feel your best every day.{' '}
+                  </Text>
+                </View>
+                <Image
+                  source={CustomImages.logo}
+                  style={styles.sideChar}
+                  resizeMode="cover"
+                />
+              </View>
+              <Text style={styles.thirdTitle}>
                 To style you best, I just need a few quicks details about your
                 look and perfrences.
               </Text>
+              <View style={styles.whiteBox}>
+                <Image source={CustomImages.flash} style={styles.icon} />
+                <Text style={[subText, styles.whiteBoxText]}>
+                  It takes less then a minute - and your style journey begins!
+                </Text>
+              </View>
+              <View style={styles.whiteBox}>
+                <Image source={CustomImages.target} style={styles.icon} />
+                <Text style={[subText, styles.whiteBoxText]}>
+                  To style you best, I just need a few quicks details about your
+                  look and perfrences.
+                </Text>
+              </View>
             </View>
           </View>
-          <CustomButton
-            title="Start Your Style Journey"
-            btnStyle={styles.button}
-            onPress={handleNextNav}
-          />
-        </View>
-      </ScrollView>
+        </ScrollView>
+        <CustomButton
+          title="Start Your Style Journey"
+          btnStyle={styles.button}
+          onPress={handleNextNav}
+        />
+      </View>
     </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
+  outterContainer: {
+    flex: 1,
+    paddingHorizontal: 24,
+  },
   commonContainer: {
     flexDirection: 'row',
   },
@@ -179,7 +195,6 @@ const styles = StyleSheet.create({
   },
   innerContent: {
     justifyContent: 'center',
-    paddingHorizontal: 24,
     flex: 1,
   },
   container: {

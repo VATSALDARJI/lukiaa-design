@@ -25,7 +25,7 @@ export const CustomImages = {
   luxury: require('./crown.png'),
   birthday: require('./birthday.png'),
   gym: require('./gym.png'),
-  burnch: require('./brunch.png'),
+  brunch: require('./brunch.png'),
   college: require('./college.png'),
   wedding: require('./wedding.png'),
   date: require('./hearts.png'),
