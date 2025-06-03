@@ -11,7 +11,6 @@ import {
   ActivityIndicator,
   ViewStyle,
 } from 'react-native';
-import LoaderKit from 'react-native-loader-kit';
 import {colors} from '../constants/colors'; // Adjust path if needed
 
 // Define the type of functions exposed via ref
@@ -61,12 +60,7 @@ const AppLoader = forwardRef<LoaderType, CustomLoaderProps>(
             {backgroundColor: backgroundColor},
             overlayStyle,
           ]}>
-          {/* <ActivityIndicator size="large" color={loaderColor} /> */}
-          <LoaderKit
-            style={{width: size, height: size}}
-            name="BallPulse"
-            color={loaderColor}
-          />
+          <ActivityIndicator size="large" color={loaderColor} />
         </View>
       </Modal>
     );

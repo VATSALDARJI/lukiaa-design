@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
   },
 
   container: {
-    marginVertical: 10,
+    // marginVertical: 10,
   },
   label: {
     marginBottom: 6,
@@ -139,6 +139,7 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 2},
     shadowRadius: 4,
     elevation: 4,
+    marginTop: -22, // Pull dropdown closer to button
   },
   item: {
     padding: 14,
