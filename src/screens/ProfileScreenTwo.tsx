@@ -12,6 +12,8 @@ import {AppLoaderRef} from '../navigation/RootScreen';
 import {CustomToaster} from '../components/toaster/CustomToaster';
 import {ALERT_TYPE} from 'react-native-alert-notification';
 import ProgressIndicator from '../components/header/CustomHeader';
+import {useDispatch} from 'react-redux';
+import {ProfileSetupCompleted} from '../redux/slice/userProfile';
 
 // Define types for better type safety
 type SkinTone =
@@ -82,6 +84,7 @@ const ProfileScreenTwo: React.FC<ScreenProps<'ProfileScreenTwo'>> = ({
   const [mostlyStrugglesWith, setMostlyStrugglesWith] = useState<string[]>([]); // Fixed typo
   const [isButtonEnabled, setIsButtonEnabled] = useState<boolean>(false);
   const details = route.params;
+  const dispatch = useDispatch();
 
   const {top, bottom} = useSafeAreaInsets();
 
@@ -116,6 +119,7 @@ const ProfileScreenTwo: React.FC<ScreenProps<'ProfileScreenTwo'>> = ({
         message: 'Profile Completed Successfully!',
         type: ALERT_TYPE.SUCCESS,
       });
+      dispatch(ProfileSetupCompleted());
       navigation.navigate('BottomTab'); // Navigate to AccountVerify on success
     },
     onError: (error: Error) => {
@@ -156,7 +160,7 @@ const ProfileScreenTwo: React.FC<ScreenProps<'ProfileScreenTwo'>> = ({
   return (
     <View style={{flex: 1}}>
       <ProgressIndicator
-        isPageOneComplete={details?.age && details?.bodyShape as any}
+        isPageOneComplete={details?.age && (details?.bodyShape as any)}
         isPageTwoComplete={false}
       />
       <View style={[styles.container, {marginBottom: bottom}]}>
@@ -227,7 +231,9 @@ const ProfileScreenTwo: React.FC<ScreenProps<'ProfileScreenTwo'>> = ({
               description="Which outfits do you struggle with the most? (Select multiple)"
               data={OutfitStruggleOptions}
               isMultiSelect={true}
-              onSelectionChange={handleSelectionChange(setMostlyStrugglesWith) as any} // Fixed typo
+              onSelectionChange={
+                handleSelectionChange(setMostlyStrugglesWith) as any
+              } // Fixed typo
             />
           </View>
         </ScrollView>

@@ -32,4 +32,11 @@ export const CustomImages = {
   party: require('./party.png'),
   moon: require('./moon.png'),
   office: require('./briefcase.png'),
+  home: require('./home.png'),
+  profile: require('./profile.png'),
+  suit: require('./suit.png'),
+  dress: require('./dress.png'),
+  chat: require('./chat.png'),
+  leftArrow: require('./arrow.png'),
+  letter_j: require('./letter-j.png'),
 };

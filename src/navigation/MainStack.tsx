@@ -8,6 +8,8 @@ import CustomHeader from '../components/header/CustomHeader';
 import ProfileScreenTwo from '../screens/ProfileScreenTwo';
 import ProgressIndicator from '../components/header/CustomHeader';
 import BottomTabNavigator from './BottomStack';
+import {useSelector} from 'react-redux';
+import {RootState} from '../redux/rootReducer';
 
 export type MainStackParams = {
   ProfileScreen: undefined;
@@ -25,10 +27,11 @@ export type MainStackParams = {
 const Stack = createNativeStackNavigator<MainStackParams>();
 
 export const MainStack = () => {
+  const {isProfileSetup} = useSelector((state: RootState) => state.userProfile);
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="EngagingScreen"
+        initialRouteName={isProfileSetup ? 'BottomTab' : 'EngagingScreen'}
         screenOptions={() => ({
           contentStyle: styles.commonContentStyle,
           headerShown: false,

@@ -1,10 +1,13 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
+import PerfectOutfitCard from '../../components/card/PerfectOutfitCard';
+import BreezyLinenCard from '../../components/card/BreezyLinenCard';
 
 const HomeTab = () => {
   return (
     <View>
-      <Text>HomeTab</Text>
+      <PerfectOutfitCard/>
+      <BreezyLinenCard/>
     </View>
   );
 };
