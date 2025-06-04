@@ -116,7 +116,7 @@ const ProfileScreenTwo: React.FC<ScreenProps<'ProfileScreenTwo'>> = ({
         message: 'Profile Completed Successfully!',
         type: ALERT_TYPE.SUCCESS,
       });
-      // navigation.navigate('AccountVerify'); // Navigate to AccountVerify on success
+      navigation.navigate('BottomTab'); // Navigate to AccountVerify on success
     },
     onError: (error: Error) => {
       console.error('Profile Completion Error:', error);
@@ -156,8 +156,8 @@ const ProfileScreenTwo: React.FC<ScreenProps<'ProfileScreenTwo'>> = ({
   return (
     <View style={{flex: 1}}>
       <ProgressIndicator
-        isPageOneComplete={details?.age && details?.bodyShape}
-        isPageTwoComplete={isButtonEnabled}
+        isPageOneComplete={details?.age && details?.bodyShape as any}
+        isPageTwoComplete={false}
       />
       <View style={[styles.container, {marginBottom: bottom}]}>
         <ScrollView
@@ -216,7 +216,7 @@ const ProfileScreenTwo: React.FC<ScreenProps<'ProfileScreenTwo'>> = ({
               description="Which price range do you usually shop in?"
               data={BrandsDealInOptions}
               isMultiSelect={false}
-              onSelectionChange={handleSelectionChange(setBrandsDealIn)}
+              onSelectionChange={handleSelectionChange(setBrandsDealIn) as any}
             />
           </View>
 
@@ -227,7 +227,7 @@ const ProfileScreenTwo: React.FC<ScreenProps<'ProfileScreenTwo'>> = ({
               description="Which outfits do you struggle with the most? (Select multiple)"
               data={OutfitStruggleOptions}
               isMultiSelect={true}
-              onSelectionChange={handleSelectionChange(setMostlyStrugglesWith)} // Fixed typo
+              onSelectionChange={handleSelectionChange(setMostlyStrugglesWith) as any} // Fixed typo
             />
           </View>
         </ScrollView>

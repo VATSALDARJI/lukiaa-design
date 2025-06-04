@@ -95,7 +95,7 @@ const ProfileScreen: React.FC<ScreenProps<'ProfileScreen'>> = ({
 
   return (
     <View style={{flex: 1}}>
-      <ProgressIndicator isPageOneComplete={isButtonEnabled} isPageTwoComplete={false} />
+      <ProgressIndicator isPageOneComplete={false} isPageTwoComplete={false} />
       <View style={[styles.container, {marginBottom: bottom}]}>
         <ScrollView
           contentContainerStyle={[styles.scrollContent]}

@@ -7,6 +7,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import CustomHeader from '../components/header/CustomHeader';
 import ProfileScreenTwo from '../screens/ProfileScreenTwo';
 import ProgressIndicator from '../components/header/CustomHeader';
+import BottomTabNavigator from './BottomStack';
 
 export type MainStackParams = {
   ProfileScreen: undefined;
@@ -18,6 +19,7 @@ export type MainStackParams = {
     bodyType: string[];
   };
   EngagingScreen: undefined;
+  BottomTab: undefined;
 };
 
 const Stack = createNativeStackNavigator<MainStackParams>();
@@ -36,18 +38,27 @@ export const MainStack = () => {
         <Stack.Screen
           name="ProfileScreen"
           component={ProfileScreen}
-          options={{
-            // header: () => <ProgressIndicator isPageOneComplete={false} />,
-            // headerShown: true,
-          }}
+          options={
+            {
+              // header: () => <ProgressIndicator isPageOneComplete={false} />,
+              // headerShown: true,
+            }
+          }
         />
         <Stack.Screen
           name="ProfileScreenTwo"
           component={ProfileScreenTwo}
-          options={{
-            // header: () => <ProgressIndicator isPageOneComplete={false} />,
-            // headerShown: true,
-          }}
+          options={
+            {
+              // header: () => <ProgressIndicator isPageOneComplete={false} />,
+              // headerShown: true,
+            }
+          }
+        />
+        <Stack.Screen
+          name="BottomTab"
+          component={BottomTabNavigator}
+          options={{headerShown: false}}
         />
       </Stack.Navigator>
     </NavigationContainer>
