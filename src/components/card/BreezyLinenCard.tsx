@@ -1,7 +1,15 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Platform,
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { colors } from '../../constants/colors';
+import {colors} from '../../constants/colors';
+import {Fonts} from '../../assets/fonts/Customfont';
 
 // Replace this with your actual shirt icon asset
 // import ShirtIcon from '../assets/shirt.png'; // Example
@@ -11,34 +19,34 @@ interface BreezyLinenCardProps {
   iconSource: any; // Should be an image source (require or { uri: ... })
 }
 
-const BreezyLinenCard: React.FC<BreezyLinenCardProps> = ({ onPress, iconSource }) => {
+const BreezyLinenCard: React.FC<BreezyLinenCardProps> = ({
+  onPress,
+  iconSource,
+}) => {
   return (
     <View style={styles.cardContainer}>
       <View style={styles.row}>
         <LinearGradient
           colors={['#7D5FFF', '#FC5C7D']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.iconGradient}
-        >
-          <Image
-            source={iconSource}
-            style={styles.icon}
-            resizeMode="contain"
-          />
+          start={{x: 0, y: 0}}
+          end={{x: 1, y: 1}}
+          style={styles.iconGradient}>
+          <Image source={iconSource} style={styles.icon} resizeMode="contain" />
         </LinearGradient>
         <View style={styles.textSection}>
           <Text style={styles.title}>Breezy Linen Combo</Text>
           <Text style={styles.subtitle}>Perfect for today's weather</Text>
         </View>
       </View>
-      <TouchableOpacity style={styles.buttonWrapper} activeOpacity={0.85} onPress={onPress}>
+      <TouchableOpacity
+        style={styles.buttonWrapper}
+        activeOpacity={0.85}
+        onPress={onPress}>
         <LinearGradient
           colors={['#7D5FFF', '#FC5C7D']}
-          start={{ x: 0, y: 0.5 }}
-          end={{ x: 1, y: 0.5 }}
-          style={styles.buttonGradient}
-        >
+          start={{x: 0, y: 0.5}}
+          end={{x: 1, y: 0.5}}
+          style={styles.buttonGradient}>
           <Text style={styles.buttonText}>View Look</Text>
         </LinearGradient>
       </TouchableOpacity>
@@ -54,7 +62,7 @@ const styles = StyleSheet.create({
     margin: 16,
     shadowColor: colors.gradientstartColor,
     shadowOpacity: 0.08,
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: {width: 0, height: 4},
     shadowRadius: 16,
     elevation: 8,
     width: '90%',
@@ -66,7 +74,7 @@ const styles = StyleSheet.create({
       ios: {
         shadowColor: colors.gradientstartColor,
         shadowOpacity: 0.08,
-        shadowOffset: { width: 0, height: 4 },
+        shadowOffset: {width: 0, height: 4},
         shadowRadius: 16,
       },
     }),
@@ -94,17 +102,18 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    color: '#111',
-    fontWeight: '700',
+    color: colors.textPrimary,
+    fontFamily: Fonts.DMSans700,
     marginBottom: 2,
   },
   subtitle: {
     fontSize: 14,
-    color: '#666',
-    fontWeight: '400',
+    color: colors.textSecondary,
+    fontFamily: Fonts.inter400,
+    marginTop: 2,
   },
   buttonWrapper: {
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
   },
   buttonGradient: {
     borderRadius: 30,
@@ -114,7 +123,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     shadowColor: '#FC5C7D',
     shadowOpacity: 0.12,
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: {width: 0, height: 4},
     shadowRadius: 12,
     elevation: 6,
   },

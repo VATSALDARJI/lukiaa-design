@@ -10,6 +10,7 @@ import ProgressIndicator from '../components/header/CustomHeader';
 import BottomTabNavigator from './BottomStack';
 import {useSelector} from 'react-redux';
 import {RootState} from '../redux/rootReducer';
+import OccasionScreen from '../screens/OccasionScreen';
 
 export type MainStackParams = {
   ProfileScreen: undefined;
@@ -22,6 +23,7 @@ export type MainStackParams = {
   };
   EngagingScreen: undefined;
   BottomTab: undefined;
+  OccasionScreen: undefined;
 };
 
 const Stack = createNativeStackNavigator<MainStackParams>();
@@ -59,10 +61,21 @@ export const MainStack = () => {
           }
         />
         <Stack.Screen
+          name='OccasionScreen'
+          component={OccasionScreen}
+          options={
+            {
+              // header: () => <ProgressIndicator isPageOneComplete={false} />,
+              // headerShown: true,
+            }
+          }
+        />
+        <Stack.Screen
           name="BottomTab"
           component={BottomTabNavigator}
           options={{headerShown: false}}
         />
+
       </Stack.Navigator>
     </NavigationContainer>
   );

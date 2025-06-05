@@ -7,6 +7,7 @@ import {
   FlatList,
   Image,
   ImageSourcePropType,
+  TextStyle,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {colors} from '../constants/colors';
@@ -20,6 +21,8 @@ interface SelectableCardGridProps {
   columns?: number;
   title?: string;
   description?: string;
+  customTitleStyle?: TextStyle | TextStyle[];
+  customSubTitleStyle?: TextStyle | TextStyle[];
 }
 
 const SelectableCardGrid = ({
@@ -29,6 +32,8 @@ const SelectableCardGrid = ({
   columns = 3,
   title = '',
   description = '',
+  customTitleStyle,
+  customSubTitleStyle,
 }: SelectableCardGridProps) => {
   const [selected, setSelected] = useState<string[]>([]);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -100,8 +105,14 @@ const SelectableCardGrid = ({
 
   return (
     <View>
-      {title ? <Text style={styles.title}>{title}</Text> : null}
-      {description ? <Text style={styles.subTitle}>{description}</Text> : null}
+      {title ? (
+        <Text style={[styles.title, customTitleStyle]}>{title}</Text>
+      ) : null}
+      {description ? (
+        <Text style={[styles.subTitle, customSubTitleStyle]}>
+          {description}
+        </Text>
+      ) : null}
 
       <FlatList
         data={data}

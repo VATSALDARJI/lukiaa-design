@@ -39,4 +39,11 @@ export const CustomImages = {
   chat: require('./chat.png'),
   leftArrow: require('./arrow.png'),
   letter_j: require('./letter-j.png'),
+  clothIcon: require('./cloth.png'),
+  shoes: require('./shoes.png'),
+  sneakers: require('./sneakers.png'),
+  star: require('./star.png'),
+  halfStar: require('./halfStar.png'),
+  check: require('./check.png'),
+  clothes: require('./clean-clothes.png'),
 };
