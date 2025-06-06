@@ -63,12 +63,12 @@ export const MainStack = () => {
         <Stack.Screen
           name='OccasionScreen'
           component={OccasionScreen}
-          options={
-            {
-              // header: () => <ProgressIndicator isPageOneComplete={false} />,
-              // headerShown: true,
-            }
-          }
+          // options={
+          //   {
+          //     header: () => <hea,
+          //     headerShown: true,
+          //   }
+          // }
         />
         <Stack.Screen
           name="BottomTab"
