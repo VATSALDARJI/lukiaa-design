@@ -1,9 +1,12 @@
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
-import React, {useState} from 'react';
+import {ScrollView, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import React, {useCallback, useState} from 'react';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {ScreenProps} from '../navigation/Stack';
 import MultiSelector from '../components/Selector/MultiSelector';
 import {CustomImages} from '../assets/images';
+import CustomButton from '../common/CustumButton';
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/rootReducer';
 
 const occasions = [
   'College Daily Life',
@@ -17,32 +20,131 @@ const occasions = [
   'Own Birthday',
 ];
 
-const OccasionScreen: React.FC<ScreenProps<'OccasionScreen'>> = ({
-  navigation,
-}) => {
-  // Get safe area insets for proper padding
-  const {bottom} = useSafeAreaInsets();
+const timePreference = ['Day', 'Night', 'Both'];
 
+const seasonAndWeather = [
+  'Hot & Sunny',
+  'Warm Evening',
+  'Cold & Windy',
+  'Mild & Pleasant',
+  'Rainy Weather',
+  'Humid & Sticky',
+  'Snowy / Very Cold',
+  'Indoor / AC',
+];
+
+const stylePreference = [
+  'Classic & Timeless',
+  'Modern & Minimalist',
+  'Trendy & Fashion-Forward',
+  'Streetwear / Urban',
+  'Sporty / Athleisure',
+  'Bohemian / Free-Spirited',
+  'Chic & Elegant',
+  'Edgy & Bold',
+];
+
+const budget = ['Affordable', 'Premium', 'Luxury'];
+
+const comfortLevel = [
+  'Only Comfort-First Styles',
+  'Try New Styles Occasionally',
+  'Experimental If It Fits Me',
+  'Love to Experiment',
+];
+
+const OccasionScreen: React.FC<ScreenProps<'OccasionScreen'>> = ({navigation}) => {
+  const {top, bottom} = useSafeAreaInsets();
+
+  // Individual states for each selector
   const [selectedOccasion, setSelectedOccasion] = useState('');
+  const [selectedTime, setSelectedTime] = useState('');
+  const [selectedWeather, setSelectedWeather] = useState('');
+  const [selectedStyle, setSelectedStyle] = useState('');
+  const [selectedBudget, setSelectedBudget] = useState('');
+  const [selectedComfort, setSelectedComfort] = useState('');
+
+  const {token} = useSelector((state:RootState) => state.auth);
+  console.log(token,"token");
+  
+
+  const handleSave = () => {
+    const result = {
+      occasion: selectedOccasion,
+      time: selectedTime,
+      weather: selectedWeather,
+      style: selectedStyle,
+      budget: selectedBudget,
+      comfort: selectedComfort,
+    };
+    console.log('Saved Preferences:', result);
+
+    // You can navigate or trigger API/save logic here
+    // navigation.goBack();
+  };
+
+  const handleNextNav = useCallback(() =>{
+    // navigation.navigate()
+  },[navigation]);
 
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, {paddingTop: top + 20,paddingBottom: bottom + 20}]}>
       <ScrollView
-        contentContainerStyle={[
-          styles.scrollContent,
-          {paddingBottom: bottom + 20},
-        ]}
+        contentContainerStyle={[styles.scrollContent,]}
         showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
-          {/* Header Section */}
           <MultiSelector
-            data={occasions}
+            question="What's the Occasion?"
+            options={occasions}
             value={selectedOccasion}
-            onSelect={setSelectedOccasion}
-            icon={CustomImages.target} // Use your icon asset here
+            onChange={setSelectedOccasion}
+            questionIcon={CustomImages.target}
+          />
+          <MultiSelector
+            question="Time Preference"
+            options={timePreference}
+            value={selectedTime}
+            onChange={setSelectedTime}
+            questionIcon={CustomImages.target}
+          />
+          <MultiSelector
+            question="Season & Weather"
+            options={seasonAndWeather}
+            value={selectedWeather}
+            onChange={setSelectedWeather}
+            questionIcon={CustomImages.target}
+          />
+          <MultiSelector
+            question="Style Preferences"
+            options={stylePreference}
+            value={selectedStyle}
+            onChange={setSelectedStyle}
+            questionIcon={CustomImages.target}
+          />
+          <MultiSelector
+            question="Budget Range"
+            options={budget}
+            value={selectedBudget}
+            onChange={setSelectedBudget}
+            questionIcon={CustomImages.target}
+          />
+          <MultiSelector
+            question="Comfort Level"
+            options={comfortLevel}
+            value={selectedComfort}
+            onChange={setSelectedComfort}
+            questionIcon={CustomImages.target}
           />
         </View>
       </ScrollView>
+
+      {/* Save Button */}
+      {/* <CustomButton
+          title="Continue to Step 2"
+          onPress={handleNextNav}
+          disabled={!isButtonEnabled}
+          style={[styles.button, !isButtonEnabled && {opacity: 0.3}]}
+        /> */}
     </View>
   );
 };
@@ -52,7 +154,7 @@ export default OccasionScreen;
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: '#F5F5F5', // Light background for better contrast
+    backgroundColor: '#F5F5F5',
   },
   container: {
     flex: 1,
@@ -61,6 +163,20 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: 20, // Extra padding for scroll content
+  },
+  saveButton: {
+    position: 'absolute',
+    bottom: 20,
+    left: 16,
+    right: 16,
+    backgroundColor: '#000',
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  saveText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

@@ -62,14 +62,6 @@ const HomeTab: React.FC<ScreenProps<'Home'>> = ({navigation}) => {
         ]}
         showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
-          {/* Header Section */}
-          <View style={styles.header}>
-            <Text style={styles.headerText}>Find Your Perfect Outfit</Text>
-            <Text style={styles.subHeaderText}>
-              Select your preferences to get personalized recommendations
-            </Text>
-          </View>
-
           {/* Perfect Outfit Card */}
           <View style={styles.section}>
             <PerfectOutfitCard onPress={handleNextNav} />

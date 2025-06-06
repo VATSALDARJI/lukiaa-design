@@ -1,54 +1,103 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, FlatList, ViewStyle } from 'react-native';
-import { CustomImages } from '../../assets/images';
+import React, {useState} from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ViewStyle,
+  TextStyle,
+  Image,
+} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import {Fonts} from '../../assets/fonts/Customfont';
+import {colors} from '../../constants/colors';
 
-interface MultiSelectorProps {
-  data: string[];
+type MultiSelectorProps = {
+  options: string[];
   value?: string;
-  onSelect: (item: string) => void;
-  label?: string;
-  icon?: any;
+  onChange: (value: string) => void;
   style?: ViewStyle;
-}
+  optionStyle?: ViewStyle;
+  optionTextStyle?: TextStyle;
+  question?: string;
+  questionIcon?: React.ReactNode;
+};
 
 const MultiSelector: React.FC<MultiSelectorProps> = ({
-  data,
+  options,
   value,
-  onSelect,
-  label = "What's the Occasion?",
-  icon,
+  onChange,
   style,
+  optionStyle,
+  optionTextStyle,
+  question,
+  questionIcon,
 }) => {
+  const [pressedIdx, setPressedIdx] = useState<number | null>(null);
+
   return (
-    <View style={[styles.container, style]}>
-      <View style={styles.labelRow}>
-        {icon && <Image source={icon} style={styles.icon} />}
-        <Text style={styles.label}>{label}</Text>
-      </View>
-      <View style={styles.chipsContainer}>
-        {data.map(item => {
-          const isSelected = value === item;
+    <View style={[styles.mainContainer,style]}>
+      {(question || questionIcon) && (
+        <View style={styles.header}>
+          {questionIcon && (
+            <Image
+              source={questionIcon}
+              style={styles.icon}
+              resizeMode="contain"
+            />
+          )}
+          {question && <Text style={styles.question}>{question}</Text>}
+        </View>
+      )}
+      <View style={styles.container}>
+        {options.map((option, idx) => {
+          const selected = value === option;
+          const pressed = pressedIdx === idx;
+
           return (
-            <TouchableOpacity
-              key={item}
-              style={[
-                styles.chip,
-                isSelected && styles.chipSelected,
-                isSelected && { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }
-              ]}
-              onPress={() => onSelect(item)}
-              activeOpacity={0.75}
-            >
-              <Text style={[styles.chipText, isSelected && styles.chipTextSelected]}>
-                {item}
-              </Text>
-              {isSelected && (
-                <Image
-                  source={CustomImages.check} // Replace with your success/check icon
-                  style={styles.checkIcon}
-                />
+            <View key={option} style={[styles.optionWrapper, optionStyle]}>
+              <LinearGradient
+                colors={
+                  selected
+                    ? ['#8C5AFF', '#F0557C']
+                    : pressed
+                    ? ['#F6F3FF', '#F6F3FF']
+                    : ['#fff', '#fff']
+                }
+                start={{x: 0, y: 0}}
+                end={{x: 1, y: 0}}
+                style={[
+                  styles.option,
+                  selected ? styles.selectedOption : styles.unselectedOption,
+                  pressed && styles.pressedOption,
+                ]}>
+                <TouchableOpacity
+                  style={styles.touchOverlay}
+                  onPress={() => onChange(option)}
+                  activeOpacity={0.7}
+                  onPressIn={() => setPressedIdx(idx)}
+                  onPressOut={() => setPressedIdx(null)}>
+                  <Text
+                    style={[
+                      styles.optionText,
+                      selected
+                        ? styles.selectedText
+                        : pressed
+                        ? styles.pressedText
+                        : styles.unselectedText,
+                      optionTextStyle,
+                    ]}>
+                    {option}
+                  </Text>
+                </TouchableOpacity>
+              </LinearGradient>
+              {selected && (
+                <View style={styles.tickCircle}>
+                  <Icon name="check" color="#fff" size={14} />
+                </View>
               )}
-            </TouchableOpacity>
+            </View>
           );
         })}
       </View>
@@ -56,64 +105,103 @@ const MultiSelector: React.FC<MultiSelectorProps> = ({
   );
 };
 
-export default MultiSelector;
-
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 16,
-    margin: 8,
-    elevation: 1,
+  mainContainer: {
+    marginVertical: 16
   },
-  labelRow: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 8,
+    marginLeft: 4,
+    columnGap: 7,
   },
   icon: {
-    width: 22,
-    height: 22,
-    marginRight: 7,
-  },
-  label: {
-    fontWeight: 'bold',
-    fontSize: 18,
-    color: '#222',
-  },
-  chipsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10, // works on React Native 0.71+, otherwise use marginRight/marginBottom
-  },
-  chip: {
-    borderWidth: 1,
-    borderColor: '#E1E1E1',
-    borderRadius: 22,
-    paddingHorizontal: 18,
-    paddingVertical: 8,
-    marginRight: 10,
-    marginBottom: 12,
-    backgroundColor: '#fff',
-  },
-  chipSelected: {
-    borderWidth: 0,
-    backgroundColor: 'linear-gradient(90deg, #a18cd1 0%, #fbc2eb 100%)', // fallback for iOS, use gradient library for RN
-    // backgroundColor: '#a18cd1', // fallback for RN
-    // To get the real gradient, use react-native-linear-gradient as a wrapper
-  },
-  chipText: {
-    color: '#5c5c5c',
-    fontSize: 16,
-  },
-  chipTextSelected: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  checkIcon: {
+    // marginRight: 6,
+    // marginTop: 2,
     width: 18,
     height: 18,
-    marginLeft: 6,
-    tintColor: '#fff',
+  },
+  question: {
+    fontFamily: Fonts.DMSans700,
+    fontSize: 18,
+    color: colors.textPrimary,
+  },
+  container: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 4,
+    marginTop: 8,
+  },
+  optionWrapper: {
+    position: 'relative',
+    // minWidth: 130,
+    minHeight: 42,
+    margin: 2,
+    width: 'auto',
+  },
+  option: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    // minWidth: 130,
+    // minHeight: 42,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    borderRadius: 22,
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 3,
+    shadowOffset: {width: 0, height: 2},
+    elevation: 1,
+    justifyContent: 'center',
+  },
+  selectedOption: {
+    borderColor: 'transparent',
+  },
+  unselectedOption: {
+    borderColor: '#E1E1E1',
+  },
+  pressedOption: {
+    borderColor: '#8C5AFF',
+  },
+  optionText: {
+    fontSize: 14,
+    fontFamily: Fonts.inter400,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 18,
+  },
+  selectedText: {
+    color: '#fff',
+  },
+  unselectedText: {
+    color: '#222',
+  },
+  pressedText: {
+    color: '#8C5AFF',
+  },
+  touchOverlay: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    // minHeight: 42,
+    justifyContent: 'center',
+  },
+  tickCircle: {
+    position: 'absolute',
+    top: -8,
+    right: 0,
+    backgroundColor: '#38D97A',
+    borderRadius: 10,
+    width: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#fff',
+    zIndex: 1,
   },
 });
+
+export default MultiSelector;
