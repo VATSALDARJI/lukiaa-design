@@ -32,11 +32,13 @@ const StackHeader = ({subtitle, title, onRightIconPress, rightIcon}: Props) => {
         <Text style={styles.title}>{title}</Text>
         {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
       </View>
-      <View>
-        <Pressable onPress={onRightIconPress} hitSlop={15}>
-          <Image source={rightIcon} style={styles.icon} />
-        </Pressable>
-      </View>
+      {rightIcon ? (
+        <View>
+          <Pressable onPress={onRightIconPress} hitSlop={15}>
+            <Image source={rightIcon} style={styles.icon} />
+          </Pressable>
+        </View>
+      ) : null}
     </View>
   );
 };

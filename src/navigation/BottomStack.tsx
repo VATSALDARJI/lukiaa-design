@@ -62,10 +62,6 @@ const BottomTabNavigator = ({navigation}) => {
   const insets = useSafeAreaInsets();
   const {username} = useSelector((state: RootState) => state.auth);
 
-  useEffect(() => {
-    navigation.navigate('OutfitDetailScreen');
-  }, []);
-
   return (
     <BottomTab.Navigator
       tabBar={props => <GradientTabBar {...props} />}

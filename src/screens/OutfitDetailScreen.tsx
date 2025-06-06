@@ -22,7 +22,12 @@ import ReadMoreText from '../common/ReadMoreText';
 import LinearGradient from 'react-native-linear-gradient';
 import ImageViewModal from '../components/modals/ImageViewModal';
 import {ModalRefType} from '../types/otherTypes';
-import {getOutfits} from '../axios/GetApis';
+import {getOutfits, getOutfitsImage} from '../axios/GetApis';
+import {ScreenProps} from '../navigation/Stack';
+import {useMutation} from '@tanstack/react-query';
+import {AppLoaderRef} from '../navigation/RootScreen';
+import {CustomToaster} from '../components/toaster/CustomToaster';
+import {ALERT_TYPE} from 'react-native-alert-notification';
 
 const DummyData: OutfitDataType = {
   id: '1',
@@ -65,30 +70,52 @@ const DummyData: OutfitDataType = {
   ],
 };
 
-const OutfitDetailScreen = () => {
+const OutfitDetailScreen: React.FC<ScreenProps<'OutfitDetailScreen'>> = ({
+  route,
+}) => {
   const imageModalRef = useRef<ModalRefType>(null);
   const [OutfitData, setOutfitData] = useState<any>();
   const [Refreshing, setRefreshing] = useState(false);
+  const params = route.params;
+  console.log(params, 'params');
 
   const handleImagePress = useCallback(() => {
     imageModalRef.current?.open?.();
   }, []);
 
-  const fetchOutfitData = useCallback(async () => {
-    try {
-      setRefreshing(true);
-      const response = await getOutfits();
-      setOutfitData(DummyData);
-    } catch (error) {
-      console.error('Error fetching outfit data:', error);
-    } finally {
-      setRefreshing(false);
-    }
-  }, []);
+  const {mutate: getOutFitData} = useMutation({
+    mutationKey: ['outfitPrefrence'],
+    mutationFn: async () => await getOutfits(params),
+    onMutate: () => AppLoaderRef?.current?.start(),
+    onError(error, variables, context) {
+      console.log(error, 'eror');
+
+      CustomToaster({
+        type: ALERT_TYPE.DANGER,
+        message: error?.message ?? 'Something went wrong!',
+      });
+    },
+    onSuccess(data, variables, context) {
+      setOutfitData(data?.data);
+    },
+    onSettled: () => AppLoaderRef?.current?.stop(),
+  });
+
+  // const fetchOutfitData = useCallback(async () => {
+  //   try {
+  //     setRefreshing(true);
+  //     const response = await getOutfits(params);
+  //     setOutfitData(response);
+  //   } catch (error) {
+  //     console.error('Error fetching outfit data:', error);
+  //   } finally {
+  //     setRefreshing(false);
+  //   }
+  // }, []);
 
   useEffect(() => {
-    fetchOutfitData();
-  }, [fetchOutfitData]);
+    getOutFitData();
+  }, []);
 
   const renderLookItems = useCallback(
     ({item}: ListRenderItemInfo<OutfitDataType['CompleteLookData'][0]>) => {
@@ -96,6 +123,80 @@ const OutfitDetailScreen = () => {
     },
     [],
   );
+
+  const renderMajorItem = itemData => {
+    console.log(itemData, 'itemData');
+    let ImageUrl = '';
+
+    const {mutate} = useMutation({
+      mutationKey: ['imageApi'],
+      mutationFn: async () =>
+        await getOutfitsImage(itemData?.promptForAIImageGeneration),
+      onMutate: () => AppLoaderRef?.current?.start(),
+      onError(error, variables, context) {
+        console.log(error);
+        CustomToaster({
+          type: ALERT_TYPE.DANGER,
+          message: error?.message ?? 'Image is not working try again!',
+        });
+      },
+      onSuccess(data, variables, context) {
+        console.log(data, 'data');
+        ImageUrl = data?.data;
+      },
+      onSettled: () => AppLoaderRef?.current?.stop,
+    });
+
+    return (
+      <>
+        <View style={styles.topContainer}>
+          <Text style={styles.title}>{itemData?.accessoriesAndFootwear}</Text>
+
+          <ReadMoreText style={styles.desc}>
+            {itemData?.outfitSummary}
+          </ReadMoreText>
+
+          {/* <View style={styles.scoreContainer}>
+                  <Image source={CustomImages.star} style={styles.star} />
+                  <Text style={styles.scoreText}>
+                    {DummyData.ai_score} • AI Match Score
+                  </Text>
+                </View> */}
+
+          <Pressable style={styles.imageContainer} onPress={handleImagePress}>
+            <Image
+              source={{uri: ImageUrl ?? DummyData?.image}}
+              style={styles.image}
+            />
+
+            <View style={styles.viewFullContainer}>
+              <Text style={styles.heading}>Tap to view Full</Text>
+            </View>
+          </Pressable>
+        </View>
+
+        <Text style={styles.lookText}>Complete Look</Text>
+        {/* this part is static beow */}
+        <FlatList
+          data={DummyData.CompleteLookData}
+          keyExtractor={keyExtractor}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          renderItem={renderLookItems}
+          removeClippedSubviews
+          contentContainerStyle={styles.flatList}
+        />
+        <CustomButton
+          title="Save Complete Outfit"
+          onPress={() => {}}
+          btnStyle={styles.btn}
+        />
+        <ImageViewModal ref={imageModalRef} imageUrl={DummyData.image} />
+      </>
+    );
+  };
+
+  console.log(OutfitData, 'outputData');
 
   return (
     <SafeAreaView style={styles.scrollView}>
@@ -111,64 +212,25 @@ const OutfitDetailScreen = () => {
         refreshControl={
           <RefreshControl
             refreshing={Refreshing}
-            onRefresh={fetchOutfitData}
+            onRefresh={getOutFitData}
             colors={[colors.gradientstartColor, colors.gradientendColor]}
             tintColor={colors.gradientstartColor}
           />
         }>
-        {OutfitData ? (
-          <>
-            <View style={styles.topContainer}>
-              <LinearGradient
-                colors={[colors.gradientstartColor, colors.gradientendColor]}
-                style={styles.headingContainer}
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}>
-                <Text style={styles.heading}>{DummyData.heading}</Text>
-              </LinearGradient>
-
-              <Text style={styles.title}>{DummyData.title}</Text>
-
-              <ReadMoreText style={styles.desc}>
-                {DummyData.description}
-              </ReadMoreText>
-
-              <View style={styles.scoreContainer}>
-                <Image source={CustomImages.star} style={styles.star} />
-                <Text style={styles.scoreText}>
-                  {DummyData.ai_score} • AI Match Score
-                </Text>
-              </View>
-
-              <Pressable
-                style={styles.imageContainer}
-                onPress={handleImagePress}>
-                <Image source={{uri: DummyData.image}} style={styles.image} />
-
-                <View style={styles.viewFullContainer}>
-                  <Text style={styles.heading}>Tap to view Full</Text>
-                </View>
-              </Pressable>
-            </View>
-
-            <Text style={styles.lookText}>Complete Look</Text>
-            <FlatList
-              data={DummyData.CompleteLookData}
-              keyExtractor={keyExtractor}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              renderItem={renderLookItems}
-              removeClippedSubviews
-              contentContainerStyle={styles.flatList}
-            />
-            <CustomButton
-              title="Save Complete Outfit"
-              onPress={() => {}}
-              btnStyle={styles.btn}
-            />
-            <ImageViewModal ref={imageModalRef} imageUrl={DummyData.image} />
-          </>
-        ) : null}
+        <>
+          <LinearGradient
+            colors={[colors.gradientstartColor, colors.gradientendColor]}
+            style={styles.headingContainer}
+            start={{x: 0, y: 0}}
+            end={{x: 1, y: 0}}>
+            <Text style={styles.heading}>{DummyData.heading}</Text>
+          </LinearGradient>
+          {OutfitData
+            ? OutfitData?.outfits?.map((item, index) =>
+                renderMajorItem(item, index),
+              )
+            : null}
+        </>
       </ScrollView>
     </SafeAreaView>
   );

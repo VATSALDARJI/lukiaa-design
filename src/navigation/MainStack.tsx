@@ -67,12 +67,16 @@ export const MainStack = () => {
         <Stack.Screen
           name="OccasionScreen"
           component={OccasionScreen}
-          // options={
-          //   {
-          //     header: () => <hea,
-          //     headerShown: true,
-          //   }
-          // }
+          options={{
+            headerShown: true,
+            header: () => (
+              <StackHeader
+                subtitle="Tell us about your preferences & get personalized recommendations"
+                title="Style Your Perfect Look"
+                // rightIcon={CustomImages.bag}
+              />
+            ),
+          }}
         />
         <Stack.Screen
           name="BottomTab"

@@ -1,12 +1,12 @@
-import {ScrollView, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import React, {useCallback, useState} from 'react';
+import {ScrollView, StyleSheet, View} from 'react-native';
+import React, {useCallback, useState, useMemo} from 'react';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {ScreenProps} from '../navigation/Stack';
 import MultiSelector from '../components/Selector/MultiSelector';
 import {CustomImages} from '../assets/images';
 import CustomButton from '../common/CustumButton';
-import { useSelector } from 'react-redux';
-import { RootState } from '../redux/rootReducer';
+import {useSelector} from 'react-redux';
+import {RootState} from '../redux/rootReducer';
 
 const occasions = [
   'College Daily Life',
@@ -53,10 +53,11 @@ const comfortLevel = [
   'Love to Experiment',
 ];
 
-const OccasionScreen: React.FC<ScreenProps<'OccasionScreen'>> = ({navigation}) => {
+const OccasionScreen: React.FC<ScreenProps<'OccasionScreen'>> = ({
+  navigation,
+}) => {
   const {top, bottom} = useSafeAreaInsets();
 
-  // Individual states for each selector
   const [selectedOccasion, setSelectedOccasion] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
   const [selectedWeather, setSelectedWeather] = useState('');
@@ -64,33 +65,52 @@ const OccasionScreen: React.FC<ScreenProps<'OccasionScreen'>> = ({navigation}) =
   const [selectedBudget, setSelectedBudget] = useState('');
   const [selectedComfort, setSelectedComfort] = useState('');
 
-  const {token} = useSelector((state:RootState) => state.auth);
-  console.log(token,"token");
-  
+  const {token} = useSelector((state: RootState) => state.auth);
 
-  const handleSave = () => {
+  const isButtonEnabled = useMemo(() => {
+    return (
+      selectedOccasion &&
+      selectedTime &&
+      selectedWeather &&
+      selectedStyle &&
+      selectedBudget &&
+      selectedComfort
+    );
+  }, [
+    selectedOccasion,
+    selectedTime,
+    selectedWeather,
+    selectedStyle,
+    selectedBudget,
+    selectedComfort,
+  ]);
+
+  const handleNextNav = useCallback(() => {
     const result = {
-      occasion: selectedOccasion,
-      time: selectedTime,
-      weather: selectedWeather,
-      style: selectedStyle,
+      occasionType: selectedOccasion,
+      timeOfEvent: selectedTime,
+      seasonWeather: selectedWeather,
+      preferredStyle: selectedStyle,
       budget: selectedBudget,
-      comfort: selectedComfort,
+      comfortLevel: selectedComfort,
     };
-    console.log('Saved Preferences:', result);
 
-    // You can navigate or trigger API/save logic here
-    // navigation.goBack();
-  };
-
-  const handleNextNav = useCallback(() =>{
-    // navigation.navigate()
-  },[navigation]);
+    navigation.navigate('OutfitDetailScreen', result);
+  }, [
+    navigation,
+    selectedOccasion,
+    selectedTime,
+    selectedWeather,
+    selectedStyle,
+    selectedBudget,
+    selectedComfort,
+  ]);
 
   return (
-    <View style={[styles.root, {paddingTop: top + 20,paddingBottom: bottom + 20}]}>
+    <View
+      style={[styles.root, {paddingTop: top + 20, paddingBottom: bottom + 20}]}>
       <ScrollView
-        contentContainerStyle={[styles.scrollContent,]}
+        contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
           <MultiSelector
@@ -138,13 +158,12 @@ const OccasionScreen: React.FC<ScreenProps<'OccasionScreen'>> = ({navigation}) =
         </View>
       </ScrollView>
 
-      {/* Save Button */}
-      {/* <CustomButton
-          title="Continue to Step 2"
-          onPress={handleNextNav}
-          disabled={!isButtonEnabled}
-          style={[styles.button, !isButtonEnabled && {opacity: 0.3}]}
-        /> */}
+      <CustomButton
+        title="Continue to Step 2"
+        onPress={handleNextNav}
+        disabled={!isButtonEnabled}
+        style={[styles.button, !isButtonEnabled && {opacity: 0.5}]}
+      />
     </View>
   );
 };
@@ -154,29 +173,21 @@ export default OccasionScreen;
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    // backgroundColor: '#F5F5F5',
+    paddingHorizontal: 16,
   },
   container: {
     flex: 1,
-    paddingHorizontal: 16,
+
     paddingTop: 16,
   },
   scrollContent: {
     flexGrow: 1,
   },
-  saveButton: {
+  button: {
     position: 'absolute',
     bottom: 20,
     left: 16,
     right: 16,
-    backgroundColor: '#000',
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  saveText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
   },
 });
