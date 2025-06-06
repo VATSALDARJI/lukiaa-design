@@ -19,17 +19,16 @@ import {useCommonStyles} from '../common/CommonStyle';
 import {Fonts} from '../assets/fonts/Customfont';
 import LinearGradient from 'react-native-linear-gradient';
 import {CustomImages} from '../assets/images';
-import { useSelector } from 'react-redux';
-import { RootState } from '../redux/rootReducer';
+import {useSelector} from 'react-redux';
+import {RootState} from '../redux/rootReducer';
 
 const EngagingScreen: React.FC = ({navigation}) => {
   const {title, subText} = useCommonStyles();
-  const {token,username} = useSelector((state:RootState) => state.auth);
-  console.log(token,username,"details");
-  
+  const {token, username} = useSelector((state: RootState) => state.auth);
+  console.log(token, username, 'details');
 
   const handleNextNav = () => {
-    navigation.navigate('ProfileScreen');
+    navigation.replace('ProfileScreen');
   };
 
   const {top, bottom} = useSafeAreaInsets();

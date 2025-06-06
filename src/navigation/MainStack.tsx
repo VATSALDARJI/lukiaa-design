@@ -11,6 +11,9 @@ import BottomTabNavigator from './BottomStack';
 import {useSelector} from 'react-redux';
 import {RootState} from '../redux/rootReducer';
 import OccasionScreen from '../screens/OccasionScreen';
+import OutfitDetailScreen from '../screens/OutfitDetailScreen';
+import StackHeader from '../components/nav/StackHeader';
+import {CustomImages} from '../assets/images';
 
 export type MainStackParams = {
   ProfileScreen: undefined;
@@ -24,6 +27,7 @@ export type MainStackParams = {
   EngagingScreen: undefined;
   BottomTab: undefined;
   OccasionScreen: undefined;
+  OutfitDetailScreen: undefined;
 };
 
 const Stack = createNativeStackNavigator<MainStackParams>();
@@ -61,7 +65,7 @@ export const MainStack = () => {
           }
         />
         <Stack.Screen
-          name='OccasionScreen'
+          name="OccasionScreen"
           component={OccasionScreen}
           options={
             {
@@ -75,7 +79,20 @@ export const MainStack = () => {
           component={BottomTabNavigator}
           options={{headerShown: false}}
         />
-
+        <Stack.Screen
+          name="OutfitDetailScreen"
+          component={OutfitDetailScreen}
+          options={{
+            headerShown: true,
+            header: () => (
+              <StackHeader
+                subtitle="Ai curated just for you"
+                title="Your Perfect Outfit"
+                rightIcon={CustomImages.bag}
+              />
+            ),
+          }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
