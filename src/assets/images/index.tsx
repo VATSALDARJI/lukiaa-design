@@ -48,4 +48,5 @@ export const CustomImages = {
   clothes: require('./clean-clothes.png'),
   bag: require('./bag.png'),
   heart: require('./heart.png'),
+  close: require('./close.png'),
 };

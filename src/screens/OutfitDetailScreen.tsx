@@ -8,8 +8,10 @@ import {
   Image,
   FlatList,
   ListRenderItemInfo,
+  Pressable,
+  RefreshControl,
 } from 'react-native';
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {colors} from '../constants/colors';
 import {CustomImages} from '../assets/images';
 import CompleteLookCard from '../components/card/CompleteLookCard';
@@ -18,6 +20,9 @@ import {keyExtractor} from '../utils/helperFunctions';
 import CustomButton from '../common/CustumButton';
 import ReadMoreText from '../common/ReadMoreText';
 import LinearGradient from 'react-native-linear-gradient';
+import ImageViewModal from '../components/modals/ImageViewModal';
+import {ModalRefType} from '../types/otherTypes';
+import {getOutfits} from '../axios/GetApis';
 
 const DummyData: OutfitDataType = {
   id: '1',
@@ -61,6 +66,30 @@ const DummyData: OutfitDataType = {
 };
 
 const OutfitDetailScreen = () => {
+  const imageModalRef = useRef<ModalRefType>(null);
+  const [OutfitData, setOutfitData] = useState<any>();
+  const [Refreshing, setRefreshing] = useState(false);
+
+  const handleImagePress = useCallback(() => {
+    imageModalRef.current?.open?.();
+  }, []);
+
+  const fetchOutfitData = useCallback(async () => {
+    try {
+      setRefreshing(true);
+      const response = await getOutfits();
+      setOutfitData(DummyData);
+    } catch (error) {
+      console.error('Error fetching outfit data:', error);
+    } finally {
+      setRefreshing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchOutfitData();
+  }, [fetchOutfitData]);
+
   const renderLookItems = useCallback(
     ({item}: ListRenderItemInfo<OutfitDataType['CompleteLookData'][0]>) => {
       return <CompleteLookCard item={item} />;
@@ -69,7 +98,7 @@ const OutfitDetailScreen = () => {
   );
 
   return (
-    <SafeAreaView style={styles.mainCont}>
+    <SafeAreaView style={styles.scrollView}>
       <StatusBar
         translucent
         backgroundColor={'transparent'}
@@ -78,44 +107,68 @@ const OutfitDetailScreen = () => {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.mainCont}
-        style={styles.scrollView}>
-        <View style={styles.topContainer}>
-          <LinearGradient
+        style={styles.scrollView}
+        refreshControl={
+          <RefreshControl
+            refreshing={Refreshing}
+            onRefresh={fetchOutfitData}
             colors={[colors.gradientstartColor, colors.gradientendColor]}
-            style={styles.headingContainer}
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 0}}>
-            <Text style={styles.heading}>{DummyData.heading}</Text>
-          </LinearGradient>
-          <Text style={styles.title}>{DummyData.title}</Text>
-          <ReadMoreText style={styles.desc}>
-            {DummyData.description}
-          </ReadMoreText>
-          <View style={styles.scoreContainer}>
-            <Image source={CustomImages.star} style={styles.star} />
-            <Text style={styles.scoreText}>
-              {DummyData.ai_score} • AI Match Score
-            </Text>
-          </View>
-          <View style={styles.imageContainer}>
-            <Image source={{uri: DummyData.image}} style={styles.image} />
-          </View>
-        </View>
-        <Text style={styles.lookText}>Complete Look</Text>
-        <FlatList
-          data={DummyData.CompleteLookData}
-          keyExtractor={keyExtractor}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          renderItem={renderLookItems}
-          removeClippedSubviews
-          contentContainerStyle={styles.flatList}
-        />
-        <CustomButton
-          title="Save Complete Outfit"
-          onPress={() => {}}
-          btnStyle={styles.btn}
-        />
+            tintColor={colors.gradientstartColor}
+          />
+        }>
+        {OutfitData ? (
+          <>
+            <View style={styles.topContainer}>
+              <LinearGradient
+                colors={[colors.gradientstartColor, colors.gradientendColor]}
+                style={styles.headingContainer}
+                start={{x: 0, y: 0}}
+                end={{x: 1, y: 0}}>
+                <Text style={styles.heading}>{DummyData.heading}</Text>
+              </LinearGradient>
+
+              <Text style={styles.title}>{DummyData.title}</Text>
+
+              <ReadMoreText style={styles.desc}>
+                {DummyData.description}
+              </ReadMoreText>
+
+              <View style={styles.scoreContainer}>
+                <Image source={CustomImages.star} style={styles.star} />
+                <Text style={styles.scoreText}>
+                  {DummyData.ai_score} • AI Match Score
+                </Text>
+              </View>
+
+              <Pressable
+                style={styles.imageContainer}
+                onPress={handleImagePress}>
+                <Image source={{uri: DummyData.image}} style={styles.image} />
+
+                <View style={styles.viewFullContainer}>
+                  <Text style={styles.heading}>Tap to view Full</Text>
+                </View>
+              </Pressable>
+            </View>
+
+            <Text style={styles.lookText}>Complete Look</Text>
+            <FlatList
+              data={DummyData.CompleteLookData}
+              keyExtractor={keyExtractor}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              renderItem={renderLookItems}
+              removeClippedSubviews
+              contentContainerStyle={styles.flatList}
+            />
+            <CustomButton
+              title="Save Complete Outfit"
+              onPress={() => {}}
+              btnStyle={styles.btn}
+            />
+            <ImageViewModal ref={imageModalRef} imageUrl={DummyData.image} />
+          </>
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );
@@ -144,7 +197,7 @@ const styles = StyleSheet.create({
   star: {width: 15, height: 15},
   scoreText: {fontSize: 14, color: colors.textSecondary, alignSelf: 'center'},
   imageContainer: {
-    height: 300,
+    height: 250,
     width: '100%',
     marginTop: 20,
     borderRadius: 10,
@@ -183,6 +236,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     color: colors.white,
+  },
+  viewFullContainer: {
+    position: 'absolute',
+    bottom: 10,
+    left: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 20,
   },
 });
 export default OutfitDetailScreen;

@@ -10,7 +10,7 @@ export const SignupApi = async (payload: SignupPayload) => {
   console.log(payload, 'payload');
 
   try {
-    const response = await AxiosInstance.post('signup', payload); // ✅ Pass payload here
+    const response = await AxiosInstance.post('users/signup', payload); // ✅ Pass payload here
     return response.data;
   } catch (error) {
     throw error;
@@ -26,7 +26,7 @@ export const LoginApi = async (payload: LoginApiType) => {
   console.log(payload, 'payload');
 
   try {
-    const response = await AxiosInstance.post('login', payload); // ✅ Pass payload here
+    const response = await AxiosInstance.post('users/login', payload); // ✅ Pass payload here
     return response.data;
   } catch (error) {
     throw error;
@@ -42,7 +42,7 @@ export const OtpVerificationApi = async (payload: OtpVerificationApiType) => {
   console.log(payload, 'payload');
 
   try {
-    const response = await AxiosInstance.post('verify/otp', payload); // ✅ Pass payload here
+    const response = await AxiosInstance.post('users/verify/otp', payload); // ✅ Pass payload here
     return response.data;
   } catch (error) {
     throw error;

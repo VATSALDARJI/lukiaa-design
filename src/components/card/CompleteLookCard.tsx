@@ -19,7 +19,7 @@ const CompleteLookCard = ({item}: Props) => {
         <Text style={styles.title}>{item.title}</Text>
         <Text style={styles.price}>{item.price}</Text>
         <CustomButton
-          title="Add"
+          title="Visit"
           onPress={() => {}}
           btnStyle={styles.btnStyle}
         />
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   lower: {paddingHorizontal: 5, paddingBottom: 5},
   btnStyle: {
     height: 30,
-    borderRadius: 5,
+    borderRadius: 10,
     padding: 0,
   },
 });

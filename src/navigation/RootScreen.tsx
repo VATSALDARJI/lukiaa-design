@@ -15,8 +15,8 @@ const RootScreen: React.FC = () => {
     <CustomToastWrapper>
       <View style={styles.container}>
         <StatusBar backgroundColor={colors.accent} barStyle="dark-content" />
-        <AppLoader ref={AppLoaderRef} />
         {isAuthenticated ? <MainStack /> : <AuthStack />}
+        <AppLoader ref={AppLoaderRef} />
       </View>
     </CustomToastWrapper>
   );
