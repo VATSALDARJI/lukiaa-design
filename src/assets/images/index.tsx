@@ -46,4 +46,7 @@ export const CustomImages = {
   halfStar: require('./halfStar.png'),
   check: require('./check.png'),
   clothes: require('./clean-clothes.png'),
+  bag: require('./bag.png'),
+  heart: require('./heart.png'),
+  close: require('./close.png'),
 };

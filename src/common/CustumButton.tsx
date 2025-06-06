@@ -33,19 +33,19 @@ const CustomButton: React.FC<CustomButtonType> = ({
         colors={[colors.gradientstartColor, colors.gradientendColor]} // Gradient from purple to pink
         start={{x: 0, y: 0}} // Gradient starts from the left
         end={{x: 1, y: 0}} // Gradient ends on the right
-        style={styles.gradient}>
-        <View style={styles.content}>
-          <Text style={styles.buttonText}>{title}</Text>
-          {showIcon && (
-            <Icon
-              name="arrow-right"
-              size={13}
-              color="#FFFFFF"
-              style={styles.icon}
-            />
-          )}
-        </View>
-      </LinearGradient>
+        style={styles.gradient}
+      />
+      <View style={styles.content}>
+        <Text style={styles.buttonText}>{title}</Text>
+        {showIcon && (
+          <Icon
+            name="arrow-right"
+            size={13}
+            color="#FFFFFF"
+            style={styles.icon}
+          />
+        )}
+      </View>
     </TouchableOpacity>
   );
 };
@@ -54,24 +54,22 @@ const styles = StyleSheet.create({
   buttonContainer: {
     borderRadius: 15, // Rounded corners
     overflow: 'hidden', // Ensure the gradient respects the rounded corners
-    width: '100%',
+    height: 50, // Fixed height for the button
   },
   gradient: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
+    ...StyleSheet.absoluteFillObject, // Fill the button container
   },
   content: {
+    flex: 1, // Allow content to fill the button
     flexDirection: 'row', // Align text and icon in a row
     alignItems: 'center', // Vertically center the content
     justifyContent: 'center', // Center the content horizontally
+    gap: 10, // Space between text and icon
   },
   buttonText: {
     color: '#FFFFFF', // White text
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '600',
-    marginRight: 10, // Space between text and icon
   },
   icon: {
     // Optional: Add margin or padding if needed

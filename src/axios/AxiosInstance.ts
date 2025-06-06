@@ -4,8 +4,6 @@ import store from '../redux/configureStore';
 // urls.js or urls.ts
 import Config from 'react-native-config';
 
-console.log('Config:', Config); // This should now include your LIVE_URL and LOCAL_URL
-
 const Urls = {
   liveUrl: Config.LIVE_URL,
   localUrl: Config.LOCAL_URL,

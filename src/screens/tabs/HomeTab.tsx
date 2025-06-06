@@ -56,7 +56,10 @@ const HomeTab: React.FC<ScreenProps<'Home'>> = ({navigation}) => {
   return (
     <View style={styles.root}>
       <ScrollView
-        contentContainerStyle={[styles.scrollContent, {paddingBottom: bottom+20}]}
+        contentContainerStyle={[
+          styles.scrollContent,
+          {paddingBottom: bottom + 20},
+        ]}
         showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
           {/* Perfect Outfit Card */}
@@ -84,7 +87,7 @@ const HomeTab: React.FC<ScreenProps<'Home'>> = ({navigation}) => {
               onPress={handleNextNav}
             />
           </View>
-          <DealsCard/>
+          <DealsCard />
         </View>
       </ScrollView>
     </View>

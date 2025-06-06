@@ -1,5 +1,5 @@
 import {StyleSheet, Image, View} from 'react-native'; // Added View for debugging
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   createBottomTabNavigator,
   BottomTabBarProps,
@@ -58,9 +58,13 @@ const GradientTabBar: React.FC<BottomTabBarProps> = props => {
 };
 // #73c3f9
 
-const BottomTabNavigator = () => {
+const BottomTabNavigator = ({navigation}) => {
   const insets = useSafeAreaInsets();
   const {username} = useSelector((state: RootState) => state.auth);
+
+  useEffect(() => {
+    navigation.navigate('OutfitDetailScreen');
+  }, []);
 
   return (
     <BottomTab.Navigator
