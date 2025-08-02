@@ -258,9 +258,9 @@ const OutfitDetailScreen: React.FC<ScreenProps<'OutfitDetailScreen'>> = ({
           </Pressable>
         </View>
 
-        <Text style={styles.lookText}>Complete Look</Text>
+        {/* <Text style={styles.lookText}>Complete Look</Text> */}
         {/* this part is static beow */}
-        <FlatList
+        {/* <FlatList
           data={DummyData.CompleteLookData}
           keyExtractor={keyExtractor}
           horizontal
@@ -268,7 +268,7 @@ const OutfitDetailScreen: React.FC<ScreenProps<'OutfitDetailScreen'>> = ({
           renderItem={renderLookItems}
           removeClippedSubviews
           contentContainerStyle={styles.flatList}
-        />
+        /> */}
         <CustomButton
           title="Save Complete Outfit"
           onPress={() => {}}
